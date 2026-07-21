@@ -13,6 +13,8 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 - Weekly GitHub Releases update checks with a user-controlled opt-out and manual check.
 - Optional Developer ID signing and Apple notarization in the release workflow.
 - Installable DMG releases with an Applications shortcut, bilingual guide, and custom Finder background.
+- Ad-hoc signing for preview DMGs so the bundled WidgetKit extension can register without an Apple Developer membership.
+- A calendar widget preview and explicit Gatekeeper instructions in the README and installer guide.
 
 ## [0.1.0] - 2026-07-21
 

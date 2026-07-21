@@ -3,37 +3,69 @@ Just Calendar Widget
 INSTALL
 
 1. Drag “Just Calendar Widget.app” onto the Applications folder.
-2. Eject this disk image.
-3. Open Just Calendar Widget from Applications.
+2. Eject this disk image. Do not run the app from this DMG.
+3. Open Just Calendar Widget from Applications once.
+
+IF MACOS BLOCKS THE APP
+
+The “-adhoc” preview is signed only to register its WidgetKit extension; it is
+not notarized by Apple. If you trust this download:
+
+1. Try to open the app from Applications, then dismiss the warning.
+2. Open System Settings → Privacy & Security.
+3. Scroll to Security and click Open Anyway for Just Calendar Widget.
+4. Confirm Open and enter your Mac password or use Touch ID if requested.
+
+Do not disable Gatekeeper globally or use Terminal bypass commands. “Open
+Anyway” creates an exception only for this app. The button is available for
+about one hour after the first launch attempt.
 
 USE
 
-Open the app once, then Control-click the desktop and choose Edit Widgets.
-Search for “Just Calendar Widget” and select a layout.
+After the first launch from Applications, Control-click the desktop and choose
+Edit Widgets. Search for “Just Calendar Widget” and select a layout.
 
 ABOUT SECURITY
 
-A release marked “unsigned” is an early preview. macOS can block it because
-it has not been signed and notarized by an identified developer. Prefer a
-signed and notarized release whenever one is available.
+A release marked “-adhoc” is an early preview. It has a local ad-hoc signature
+so macOS can register the bundled widget extension, but it has no Developer ID
+signature or Apple notarization. Prefer a signed and notarized release whenever
+one is available.
 
 Русский
 
 УСТАНОВКА
 
 1. Перетащите «Just Calendar Widget.app» на папку Applications.
-2. Извлеките этот образ диска.
-3. Откройте Just Calendar Widget из Applications.
+2. Извлеките этот образ диска. Не запускайте приложение из DMG.
+3. Один раз откройте Just Calendar Widget именно из Applications.
+
+ЕСЛИ macOS БЛОКИРУЕТ ПРИЛОЖЕНИЕ
+
+Тестовый релиз с окончанием «-adhoc» имеет только ad-hoc подпись, нужную для
+регистрации WidgetKit extension, но не имеет подписи Developer ID и
+нотарификации Apple. Если вы доверяете загрузке:
+
+1. Попробуйте открыть приложение из Applications и закройте предупреждение.
+2. Откройте «Системные настройки» → «Конфиденциальность и безопасность».
+3. Прокрутите до «Безопасность» и нажмите «Открыть всё равно» для
+   Just Calendar Widget.
+4. Подтвердите «Открыть» и введите пароль Mac или используйте Touch ID,
+   если система попросит.
+
+Не отключайте Gatekeeper целиком и не используйте команды обхода в Terminal.
+«Открыть всё равно» создаёт исключение только для этого приложения. Кнопка
+доступна около часа после первой попытки запуска.
 
 ИСПОЛЬЗОВАНИЕ
 
-Один раз откройте приложение, затем нажмите Control на рабочем столе и
+После первого запуска из Applications нажмите Control на рабочем столе и
 выберите «Изменить виджеты». Найдите «Just Calendar Widget» и выберите
 подходящий виджет.
 
 О БЕЗОПАСНОСТИ
 
-Релиз с пометкой «unsigned» — ранняя тестовая версия. macOS может не
-открыть её, потому что она не подписана и не нотарифицирована известным
-разработчиком. Когда доступна подписанная и нотарифицированная версия,
-выбирайте её.
+Релиз с окончанием «-adhoc» — ранняя тестовая версия. Ad-hoc подпись позволяет
+macOS зарегистрировать встроенный WidgetKit extension, но это не подпись
+известного разработчика и не нотарификация Apple. Когда доступна подписанная
+и нотарифицированная версия, выбирайте её.

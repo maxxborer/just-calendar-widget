@@ -12,6 +12,8 @@ A focused macOS calendar companion with exactly three desktop widgets. Built wit
 
 Just Calendar Widget puts a clean, blue, macOS-style calendar on your desktop. It follows the system calendar, locale, first weekday, and time zone; the current day uses the system blue accent. No calendar events are read or stored.
 
+![Large calendar widget preview](docs/images/widget-preview.png)
+
 | Widget | macOS size | Months |
 | --- | --- | --- |
 | Two Months | Medium (`2×1`) | Current and next |
@@ -22,13 +24,18 @@ Just Calendar Widget puts a clean, blue, macOS-style calendar on your desktop. I
 
 1. Download the `.dmg` from the [latest release](https://github.com/maxxborer/just-calendar-widget/releases).
 2. Open the disk image and drag **Just Calendar Widget.app** onto **Applications**.
-3. Eject the disk image and open **Just Calendar Widget** from Applications.
+3. Eject the disk image. Do **not** run the app from the DMG.
+4. Open **Just Calendar Widget** from Applications once.
 
-The DMG also contains a short bilingual installation guide. A release whose filename ends in `-unsigned.dmg` is an early preview: macOS may block it because it has no Developer ID signature or Apple notarization. Prefer the signed, notarized DMG when it is available.
+The DMG contains the same bilingual installation guide. A file ending in `-adhoc.dmg` is a preview with an ad-hoc signature: it lets macOS register the bundled WidgetKit extension, but it has no Developer ID signature or Apple notarization.
+
+### If macOS blocks the preview
+
+After you try to open the app from Applications, choose **Apple menu → System Settings → Privacy & Security**, scroll to **Security**, and click **Open Anyway** for Just Calendar Widget. Confirm **Open** and authenticate if requested. This creates an exception only for this app; do not disable Gatekeeper globally or use Terminal bypass commands. Apple makes the button available for about one hour after the first launch attempt. Prefer a signed, notarized DMG when one is available.
 
 ## Use
 
-Open the app once. If no widget is installed, it shows a three-step guide. Then Control-click the desktop, choose **Edit Widgets**, search for **Just Calendar Widget**, and pick one of the layouts above.
+Open the app once **from Applications**. If no widget is installed, it shows a three-step guide. Then Control-click the desktop, choose **Edit Widgets**, search for **Just Calendar Widget**, and pick one of the layouts above. WidgetKit registers a widget only after its containing app has been launched at least once after installation.
 
 Use the blue chevrons in a widget to browse months. The selected period is shared by all copies of that widget type. Selecting a date opens the app and highlights that day.
 
@@ -57,7 +64,7 @@ xcodebuild \
 
 ## Releases
 
-Every push or merged pull request to `main` or `master` is tested and automatically released as the next patch version. The workflow updates [Config/Version.xcconfig](Config/Version.xcconfig), commits the version, creates a tag, and publishes a GitHub Release with an installable DMG. If Apple Developer signing secrets are configured, the DMG is Developer ID signed and notarized; otherwise it is clearly marked as an unsigned preview.
+Every push or merged pull request to `main` or `master` is tested and automatically released as the next patch version. The workflow updates [Config/Version.xcconfig](Config/Version.xcconfig), commits the version, creates a tag, and publishes a GitHub Release with an installable DMG. If Apple Developer signing secrets are configured, the DMG is Developer ID signed and notarized; otherwise it is an ad-hoc-signed preview so the bundled WidgetKit extension can register.
 
 ```sh
 # Start the next minor line: 0.1.0 → 0.2.0.

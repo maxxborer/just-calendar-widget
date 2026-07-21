@@ -6,7 +6,7 @@ Every direct push or merged pull request in `main` or `master` starts the **Rele
 
 For example, a push while the version is `0.1.0` publishes `v0.1.1` and commits that version back to the same branch. The workflow uses a `[skip release]` commit marker to avoid recursively creating another release.
 
-GitHub source archives are created automatically for every Release. The workflow also attaches an installable DMG with the app, an Applications shortcut, a bilingual installation guide, and a custom Finder background. When Apple signing secrets are configured, the workflow signs the app with Developer ID, notarizes the DMG with Apple, staples the resulting ticket, and attaches the final DMG. Without those secrets, it produces an unsigned preview DMG instead.
+GitHub source archives are created automatically for every Release. The workflow also attaches an installable DMG with the app, an Applications shortcut, a bilingual installation guide, and a custom Finder background. When Apple signing secrets are configured, the workflow signs the app with Developer ID, notarizes the DMG with Apple, staples the resulting ticket, and attaches the final DMG. Without those secrets, it produces an ad-hoc-signed preview DMG (`-adhoc.dmg`) instead.
 
 ### Starting a new minor or major line
 
@@ -28,9 +28,9 @@ If branch protection or a ruleset is enabled, allow **GitHub Actions** to bypass
 
 In **Settings → Actions → General**, set **Workflow permissions** to **Read and write permissions**. This allows the workflow's scoped `contents: write` token to create its version commit, tag, and Release.
 
-### Unsigned preview builds
+### Ad-hoc preview builds
 
-Unsigned builds are useful for early adopters and contributors. macOS may block the first launch; users can approve it in **System Settings → Privacy & Security**. Do not describe an unsigned build as notarized or production-signed.
+The preview workflow signs the app and its WidgetKit extension ad-hoc without an Apple Developer membership. This permits macOS to register the embedded extension after the app is copied to **Applications** and launched once. It does not identify the developer or notarize the app, so macOS may block the first launch. The DMG guide explains the standard **System Settings → Privacy & Security → Open Anyway** exception; do not describe this build as notarized or production-signed.
 
 ## Signed and notarized public releases
 

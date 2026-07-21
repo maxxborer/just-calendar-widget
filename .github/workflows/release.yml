@@ -103,7 +103,12 @@ jobs:
               -configuration Release \
               -destination 'platform=macOS' \
               -derivedDataPath "$RUNNER_TEMP/DerivedData" \
-              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGN_STYLE=Manual \
+              CODE_SIGN_IDENTITY=- \
+              CODE_SIGN_ENTITLEMENTS=Config/AdHoc.entitlements \
+              PROVISIONING_PROFILE_SPECIFIER= \
+              APP_PROVISIONING_PROFILE_UUID= \
+              WIDGET_PROVISIONING_PROFILE_UUID= \
               build
           fi
 
@@ -123,6 +128,8 @@ jobs:
           suffix='-unsigned'
           if [ "$SIGNED_RELEASE" = 'true' ]; then
             suffix=''
+          else
+            suffix='-adhoc'
           fi
           archive_path="$RUNNER_TEMP/Just-Calendar-Widget-${version}${suffix}.dmg"
           scripts/create-dmg.sh "$app_path" "$archive_path"
@@ -158,7 +165,7 @@ jobs:
           if [ "$SIGNED_RELEASE" = 'true' ]; then
             echo "Developer ID signed and Apple notarized macOS build ${{ steps.archive.outputs.build }}." > "$note_path"
           else
-            echo "Unsigned macOS preview build ${{ steps.archive.outputs.build }}. See [the installation guide](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/releasing.md#unsigned-preview-builds) before opening it." > "$note_path"
+            echo "Ad-hoc-signed, non-notarized macOS preview build ${{ steps.archive.outputs.build }}. Install it in Applications and see [the installation guide](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/releasing.md#ad-hoc-preview-builds) before opening it." > "$note_path"
           fi
           echo "path=$note_path" >> "$GITHUB_OUTPUT"
 
