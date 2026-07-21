@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 import WidgetKit
 
@@ -83,19 +84,19 @@ struct CalendarWidgetView: View {
     let entry: CalendarEntry
 
     var body: some View {
-        VStack(spacing: 8) {
-            WidgetHeader(kind: entry.kind, title: headerTitle)
+        VStack(spacing: contentSpacing) {
+            CalendarWidgetHeader(kind: entry.kind, title: visibleRangeTitle)
 
             switch entry.kind {
             case .twoMonths:
-                HStack(alignment: .top, spacing: 12) {
+                HStack(alignment: .top, spacing: 10) {
                     ForEach(entry.grids, id: \.monthStart) { grid in
                         MonthGridView(grid: grid, style: .mini)
                     }
                 }
             case .fourMonths:
                 LazyVGrid(
-                    columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                    columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
                     spacing: 10
                 ) {
                     ForEach(entry.grids, id: \.monthStart) { grid in
@@ -108,50 +109,88 @@ struct CalendarWidgetView: View {
                 }
             }
         }
-        .padding(14)
+        .padding(entry.kind == .currentMonth ? 16 : 14)
         .containerBackground(for: .widget) {
-            Color.clear
+            LinearGradient(
+                colors: [
+                    Color(nsColor: .controlBackgroundColor),
+                    Color.accentColor.opacity(0.07)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         }
     }
 
-    private var headerTitle: String {
+    private var contentSpacing: CGFloat {
         switch entry.kind {
         case .twoMonths:
-            "Calendar"
+            10
         case .fourMonths:
-            "Calendar overview"
+            8
         case .currentMonth:
-            entry.grids.first?.title ?? "Calendar"
+            14
         }
+    }
+
+    private var visibleRangeTitle: String {
+        guard let firstGrid = entry.grids.first else {
+            return "Calendar"
+        }
+
+        guard let lastGrid = entry.grids.last, firstGrid.monthStart != lastGrid.monthStart else {
+            return firstGrid.title
+        }
+
+        let firstMonth = firstGrid.monthStart.formatted(.dateTime.month(.wide))
+        let lastMonth = lastGrid.monthStart.formatted(.dateTime.month(.wide).year())
+        return "\(firstMonth) – \(lastMonth)"
     }
 }
 
-private struct WidgetHeader: View {
+private struct CalendarWidgetHeader: View {
     let kind: WidgetKind
     let title: String
 
     var body: some View {
-        HStack(spacing: 8) {
-            Text(title)
-                .font(.headline.weight(.semibold))
-                .lineLimit(1)
+        HStack(spacing: 10) {
+            Image(systemName: "calendar")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 28, height: 28)
+                .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Calendar")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                Text(title)
+                    .font(.subheadline.weight(.bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
 
             Spacer(minLength: 0)
 
             Button(intent: ChangeMonthIntent(kind: kind, delta: -1)) {
                 Image(systemName: "chevron.left")
+                    .frame(width: 26, height: 26)
+                    .background(Color.accentColor.opacity(0.12), in: Circle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Previous month")
 
             Button(intent: ChangeMonthIntent(kind: kind, delta: 1)) {
                 Image(systemName: "chevron.right")
+                    .frame(width: 26, height: 26)
+                    .background(Color.accentColor.opacity(0.12), in: Circle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Next month")
         }
-        .font(.caption.weight(.medium))
-        .foregroundStyle(.secondary)
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(Color.accentColor)
     }
 }
 
@@ -162,27 +201,45 @@ private enum MonthGridStyle {
     var titleFont: Font {
         switch self {
         case .mini:
-            .caption.weight(.semibold)
+            .caption.weight(.bold)
         case .large:
-            .headline.weight(.semibold)
+            .title3.weight(.bold)
         }
     }
 
     var dayFont: Font {
         switch self {
         case .mini:
-            .caption2
+            .caption2.weight(.medium)
         case .large:
-            .callout.weight(.medium)
+            .body.weight(.medium)
         }
     }
 
     var cellHeight: CGFloat {
         switch self {
         case .mini:
-            15
+            18
         case .large:
-            31
+            35
+        }
+    }
+
+    var verticalSpacing: CGFloat {
+        switch self {
+        case .mini:
+            3
+        case .large:
+            6
+        }
+    }
+
+    var cardPadding: CGFloat {
+        switch self {
+        case .mini:
+            8
+        case .large:
+            12
         }
     }
 }
@@ -192,22 +249,31 @@ private struct MonthGridView: View {
     let style: MonthGridStyle
 
     var body: some View {
-        VStack(spacing: style == .mini ? 3 : 7) {
-            Text(grid.title)
-                .font(style.titleFont)
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(spacing: style.verticalSpacing) {
+            HStack(spacing: 6) {
+                Text(style == .large ? grid.monthStart.formatted(.dateTime.month(.wide)) : grid.title)
+                    .font(style.titleFont)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                if style == .large {
+                    Text(grid.monthStart.formatted(.dateTime.year()))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
 
             HStack(spacing: 0) {
                 ForEach(Array(grid.weekdaySymbols.enumerated()), id: \.offset) { _, symbol in
-                    Text(symbol)
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(.tertiary)
+                    Text(symbol.uppercased())
+                        .font(.system(size: style == .mini ? 8 : 10, weight: .semibold))
+                        .foregroundStyle(Color.accentColor.opacity(0.8))
                         .frame(maxWidth: .infinity)
                 }
             }
 
-            VStack(spacing: style == .mini ? 1 : 4) {
+            VStack(spacing: style == .mini ? 1 : 5) {
                 ForEach(Array(grid.weeks.enumerated()), id: \.offset) { _, week in
                     HStack(spacing: 0) {
                         ForEach(Array(week.enumerated()), id: \.offset) { _, day in
@@ -217,7 +283,13 @@ private struct MonthGridView: View {
                 }
             }
         }
+        .padding(style.cardPadding)
         .frame(maxWidth: .infinity, alignment: .top)
+        .background(Color.primary.opacity(style == .mini ? 0.045 : 0.035), in: RoundedRectangle(cornerRadius: style == .mini ? 12 : 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: style == .mini ? 12 : 16, style: .continuous)
+                .stroke(Color.accentColor.opacity(0.12), lineWidth: 1)
+        }
     }
 }
 
@@ -245,13 +317,14 @@ private struct DayCell: View {
     private func label(for day: CalendarDay) -> some View {
         Text(day.number, format: .number)
             .font(style.dayFont)
-            .foregroundStyle(day.isToday ? Color.white : Color.primary)
+            .foregroundStyle(day.isToday ? Color.white : day.isSelected ? Color.accentColor : Color.primary)
             .frame(maxWidth: .infinity, minHeight: style.cellHeight)
             .background {
                 if day.isToday {
-                    Capsule().fill(Color.accentColor)
+                    Circle().fill(Color.accentColor)
                 } else if day.isSelected {
-                    Capsule().fill(Color.accentColor.opacity(0.16))
+                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                        .fill(Color.accentColor.opacity(0.14))
                 }
             }
             .contentShape(Rectangle())

@@ -1,0 +1,39 @@
+Just Calendar Widget
+
+INSTALL
+
+1. Drag “Just Calendar Widget.app” onto the Applications folder.
+2. Eject this disk image.
+3. Open Just Calendar Widget from Applications.
+
+USE
+
+Open the app once, then Control-click the desktop and choose Edit Widgets.
+Search for “Just Calendar Widget” and select a layout.
+
+ABOUT SECURITY
+
+A release marked “unsigned” is an early preview. macOS can block it because
+it has not been signed and notarized by an identified developer. Prefer a
+signed and notarized release whenever one is available.
+
+Русский
+
+УСТАНОВКА
+
+1. Перетащите «Just Calendar Widget.app» на папку Applications.
+2. Извлеките этот образ диска.
+3. Откройте Just Calendar Widget из Applications.
+
+ИСПОЛЬЗОВАНИЕ
+
+Один раз откройте приложение, затем нажмите Control на рабочем столе и
+выберите «Изменить виджеты». Найдите «Just Calendar Widget» и выберите
+подходящий виджет.
+
+О БЕЗОПАСНОСТИ
+
+Релиз с пометкой «unsigned» — ранняя тестовая версия. macOS может не
+открыть её, потому что она не подписана и не нотарифицирована известным
+разработчиком. Когда доступна подписанная и нотарифицированная версия,
+выбирайте её.

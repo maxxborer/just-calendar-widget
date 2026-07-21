@@ -7,6 +7,9 @@ on:
 permissions:
   contents: write
 
+env:
+  SIGNED_RELEASE: ${{ secrets.APPLE_CERTIFICATE_BASE64 != '' && secrets.APPLE_CERTIFICATE_PASSWORD != '' && secrets.KEYCHAIN_PASSWORD != '' && secrets.APPLE_API_KEY_BASE64 != '' && secrets.APPLE_API_KEY_ID != '' && secrets.APPLE_API_ISSUER_ID != '' && secrets.APPLE_TEAM_ID != '' && secrets.APP_PROVISIONING_PROFILE_BASE64 != '' && secrets.WIDGET_PROVISIONING_PROFILE_BASE64 != '' }}
+
 jobs:
   release:
     name: Build and publish release
@@ -20,6 +23,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
       - name: Test source
         run: |
           xcodebuild \
@@ -30,34 +34,134 @@ jobs:
             -derivedDataPath "$RUNNER_TEMP/TestDerivedData" \
             CODE_SIGNING_ALLOWED=NO \
             test
+
       - name: Bump patch version
         id: version
         run: |
           version="$(scripts/version.sh patch)"
           echo "value=$version" >> "$GITHUB_OUTPUT"
-      - name: Build application
+
+      - name: Import Developer ID certificate
+        if: env.SIGNED_RELEASE == 'true'
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
-          xcodebuild \
-            -project JustCalendarWidget.xcodeproj \
-            -scheme JustCalendarWidget \
-            -configuration Release \
-            -destination 'platform=macOS' \
-            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
-            CODE_SIGNING_ALLOWED=NO \
-            build
-      - name: Create ZIP archive
+          certificate_path="$RUNNER_TEMP/developer-id.p12"
+          keychain_path="$RUNNER_TEMP/app-signing.keychain-db"
+          echo "$APPLE_CERTIFICATE_BASE64" | base64 --decode > "$certificate_path"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$keychain_path"
+          security import "$certificate_path" -k "$keychain_path" -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12
+          security list-keychain -d user -s "$keychain_path" login.keychain-db
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$keychain_path"
+          echo "KEYCHAIN_PATH=$keychain_path" >> "$GITHUB_ENV"
+
+      - name: Install Developer ID provisioning profiles
+        if: env.SIGNED_RELEASE == 'true'
+        env:
+          APP_PROVISIONING_PROFILE_BASE64: ${{ secrets.APP_PROVISIONING_PROFILE_BASE64 }}
+          WIDGET_PROVISIONING_PROFILE_BASE64: ${{ secrets.WIDGET_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          profiles_path="$HOME/Library/MobileDevice/Provisioning Profiles"
+          app_profile_path="$RUNNER_TEMP/just-calendar-widget.provisionprofile"
+          widget_profile_path="$RUNNER_TEMP/just-calendar-widget-extension.provisionprofile"
+          mkdir -p "$profiles_path"
+          echo "$APP_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$app_profile_path"
+          echo "$WIDGET_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$widget_profile_path"
+          app_profile_uuid="$(security cms -D -i "$app_profile_path" | /usr/libexec/PlistBuddy -c 'Print :UUID' /dev/stdin)"
+          widget_profile_uuid="$(security cms -D -i "$widget_profile_path" | /usr/libexec/PlistBuddy -c 'Print :UUID' /dev/stdin)"
+          cp "$app_profile_path" "$profiles_path/$app_profile_uuid.provisionprofile"
+          cp "$widget_profile_path" "$profiles_path/$widget_profile_uuid.provisionprofile"
+          echo "APP_PROVISIONING_PROFILE_UUID=$app_profile_uuid" >> "$GITHUB_ENV"
+          echo "WIDGET_PROVISIONING_PROFILE_UUID=$widget_profile_uuid" >> "$GITHUB_ENV"
+
+      - name: Build application
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          if [ "$SIGNED_RELEASE" = 'true' ]; then
+            xcodebuild \
+              -project JustCalendarWidget.xcodeproj \
+              -scheme JustCalendarWidget \
+              -configuration Release \
+              -destination 'platform=macOS' \
+              -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+              CODE_SIGN_STYLE=Manual \
+              CODE_SIGN_IDENTITY='Developer ID Application' \
+              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              APP_PROVISIONING_PROFILE_UUID="$APP_PROVISIONING_PROFILE_UUID" \
+              WIDGET_PROVISIONING_PROFILE_UUID="$WIDGET_PROVISIONING_PROFILE_UUID" \
+              OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_PATH" \
+              build
+          else
+            xcodebuild \
+              -project JustCalendarWidget.xcodeproj \
+              -scheme JustCalendarWidget \
+              -configuration Release \
+              -destination 'platform=macOS' \
+              -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+              CODE_SIGNING_ALLOWED=NO \
+              build
+          fi
+
+      - name: Verify signed app
+        if: env.SIGNED_RELEASE == 'true'
+        run: |
+          app_path="$RUNNER_TEMP/DerivedData/Build/Products/Release/Just Calendar Widget.app"
+          codesign --verify --deep --strict --verbose=2 "$app_path"
+
+      - name: Create installable DMG
         id: archive
         run: |
           app_path="$RUNNER_TEMP/DerivedData/Build/Products/Release/Just Calendar Widget.app"
           app_name="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleName' "$app_path/Contents/Info.plist")"
           version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_path/Contents/Info.plist")"
           build="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$app_path/Contents/Info.plist")"
-          archive_path="$RUNNER_TEMP/Just-Calendar-Widget-${version}-unsigned.zip"
-          ditto -c -k --keepParent "$app_path" "$archive_path"
+          suffix='-unsigned'
+          if [ "$SIGNED_RELEASE" = 'true' ]; then
+            suffix=''
+          fi
+          archive_path="$RUNNER_TEMP/Just-Calendar-Widget-${version}${suffix}.dmg"
+          scripts/create-dmg.sh "$app_path" "$archive_path"
+          echo "app_path=$app_path" >> "$GITHUB_OUTPUT"
           echo "name=$app_name" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "build=$build" >> "$GITHUB_OUTPUT"
           echo "path=$archive_path" >> "$GITHUB_OUTPUT"
+
+      - name: Notarize and staple disk image
+        if: env.SIGNED_RELEASE == 'true'
+        env:
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: |
+          api_key_path="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+          echo "$APPLE_API_KEY_BASE64" | base64 --decode > "$api_key_path"
+          xcrun notarytool submit "${{ steps.archive.outputs.path }}" \
+            --key "$api_key_path" \
+            --key-id "$APPLE_API_KEY_ID" \
+            --issuer "$APPLE_API_ISSUER_ID" \
+            --wait
+          xcrun stapler staple "${{ steps.archive.outputs.path }}"
+          xcrun stapler validate "${{ steps.archive.outputs.path }}"
+          spctl --assess --type open --context context:primary-signature --verbose=4 "${{ steps.archive.outputs.path }}"
+          spctl --assess --type execute --verbose=4 "${{ steps.archive.outputs.app_path }}"
+
+      - name: Prepare release note
+        id: note
+        run: |
+          note_path="$RUNNER_TEMP/release-note.md"
+          if [ "$SIGNED_RELEASE" = 'true' ]; then
+            echo "Developer ID signed and Apple notarized macOS build ${{ steps.archive.outputs.build }}." > "$note_path"
+          else
+            echo "Unsigned macOS preview build ${{ steps.archive.outputs.build }}. See [the installation guide](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/releasing.md#unsigned-preview-builds) before opening it." > "$note_path"
+          fi
+          echo "path=$note_path" >> "$GITHUB_OUTPUT"
+
       - name: Commit version and create tag
         env:
           TAG: v${{ steps.version.outputs.value }}
@@ -68,12 +172,14 @@ jobs:
           git commit -m "chore(release): $TAG [skip release]"
           git tag -a "$TAG" -m "Just Calendar Widget $TAG"
           git push origin "HEAD:${GITHUB_REF_NAME}" "$TAG"
+
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: v${{ steps.version.outputs.value }}
         run: |
+          notes="$(cat \"${{ steps.note.outputs.path }}\")"
           gh release create "$TAG" "${{ steps.archive.outputs.path }}" \
             --generate-notes \
             --title "${{ steps.archive.outputs.name }} ${{ steps.archive.outputs.version }}" \
-            --notes "Unsigned macOS build ${{ steps.archive.outputs.build }}. See [the installation guide](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/releasing.md#unsigned-builds) before opening it."
+            --notes "$notes"

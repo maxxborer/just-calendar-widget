@@ -6,6 +6,14 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 ## [Unreleased]
 
+### Added
+
+- A system-style blue calendar redesign for all three widget layouts.
+- A generated macOS application icon in the AppIcon asset catalog.
+- Weekly GitHub Releases update checks with a user-controlled opt-out and manual check.
+- Optional Developer ID signing and Apple notarization in the release workflow.
+- Installable DMG releases with an Applications shortcut, bilingual guide, and custom Finder background.
+
 ## [0.1.0] - 2026-07-21
 
 ### Added
@@ -14,5 +22,5 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 - Interactive setup guide for adding the first widget.
 - Per-widget-kind month navigation and date deep links.
 
-[Unreleased]: https://github.com/maxxborer/just-calendar-widget/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/maxxborer/just-calendar-widget/compare/v0.1.1...HEAD
 [0.1.0]: https://github.com/maxxborer/just-calendar-widget/releases/tag/v0.1.0

@@ -4,11 +4,13 @@
 [![MIT License](https://img.shields.io/github/license/maxxborer/just-calendar-widget)](LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/maxxborer/just-calendar-widget?display_name=tag)](https://github.com/maxxborer/just-calendar-widget/releases)
 
-A focused macOS calendar companion with exactly three desktop widgets. Built with SwiftUI and WidgetKit — no network access, accounts, or third-party dependencies.
+A focused macOS calendar companion with exactly three desktop widgets. Built with SwiftUI and WidgetKit — no accounts, calendar events, or third-party dependencies.
 
 [Website](https://maxxborer.github.io/just-calendar-widget/) · [Download](https://github.com/maxxborer/just-calendar-widget/releases) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-## Widgets
+## What it is
+
+Just Calendar Widget puts a clean, blue, macOS-style calendar on your desktop. It follows the system calendar, locale, first weekday, and time zone; the current day uses the system blue accent. No calendar events are read or stored.
 
 | Widget | macOS size | Months |
 | --- | --- | --- |
@@ -16,13 +18,23 @@ A focused macOS calendar companion with exactly three desktop widgets. Built wit
 | Four Months | Large (`2×2`) | Previous, current, and two next |
 | Current Month | Large (`2×2`) | One large current month |
 
-The app follows the system calendar, locale, first weekday, and time zone. The current day is accented with the system accent colour. Use the chevrons in a widget to browse months; the selected period is shared by all copies of that widget type.
+## Install
 
-## Adding a widget
+1. Download the `.dmg` from the [latest release](https://github.com/maxxborer/just-calendar-widget/releases).
+2. Open the disk image and drag **Just Calendar Widget.app** onto **Applications**.
+3. Eject the disk image and open **Just Calendar Widget** from Applications.
 
-Open **Just Calendar Widget**. If no widget is present, the app displays an interactive three-step guide. On macOS, Control-click the desktop, choose **Edit Widgets**, search for **Just Calendar Widget**, then pick one of the layouts above.
+The DMG also contains a short bilingual installation guide. A release whose filename ends in `-unsigned.dmg` is an early preview: macOS may block it because it has no Developer ID signature or Apple notarization. Prefer the signed, notarized DMG when it is available.
 
-Selecting a date in a widget opens the app and shows the chosen date.
+## Use
+
+Open the app once. If no widget is installed, it shows a three-step guide. Then Control-click the desktop, choose **Edit Widgets**, search for **Just Calendar Widget**, and pick one of the layouts above.
+
+Use the blue chevrons in a widget to browse months. The selected period is shared by all copies of that widget type. Selecting a date opens the app and highlights that day.
+
+## Updates and privacy
+
+The app can check the repository's public GitHub Releases API for a newer version. It checks at most once every seven days, sends no account or calendar data, and only opens the release page after you choose **Open Release**. Disable automatic checks or run **Check Now** in **Just Calendar Widget → Settings**.
 
 ## Requirements and development
 
@@ -45,7 +57,7 @@ xcodebuild \
 
 ## Releases
 
-Every push or merged pull request to `main` or `master` is tested and automatically released as the next patch version. The workflow updates [Config/Version.xcconfig](Config/Version.xcconfig), commits the version, creates a tag, builds an unsigned ZIP, and publishes a GitHub Release.
+Every push or merged pull request to `main` or `master` is tested and automatically released as the next patch version. The workflow updates [Config/Version.xcconfig](Config/Version.xcconfig), commits the version, creates a tag, and publishes a GitHub Release with an installable DMG. If Apple Developer signing secrets are configured, the DMG is Developer ID signed and notarized; otherwise it is clearly marked as an unsigned preview.
 
 ```sh
 # Start the next minor line: 0.1.0 → 0.2.0.
