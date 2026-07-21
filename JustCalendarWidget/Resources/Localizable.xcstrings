@@ -1,0 +1,67 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Add a Just Calendar Widget to see your months at a glance." : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Добавьте Just Calendar Widget, чтобы видеть месяцы с первого взгляда." } } }
+    },
+    "Added" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Добавлен" } } }
+    },
+    "Added layouts" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Добавленные варианты" } } }
+    },
+    "Back" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Назад" } } }
+    },
+    "Check for widgets" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверить виджеты" } } }
+    },
+    "Choose a layout" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите вариант" } } }
+    },
+    "Control-click the desktop, then choose Edit Widgets." : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Нажмите Control и щёлкните рабочий стол, затем выберите «Изменить виджеты»." } } }
+    },
+    "Current Month" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Текущий месяц" } } }
+    },
+    "Find Just Calendar Widget" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Найдите Just Calendar Widget" } } }
+    },
+    "Four Months" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Четыре месяца" } } }
+    },
+    "Next" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Далее" } } }
+    },
+    "Not added" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не добавлен" } } }
+    },
+    "Open the widget gallery" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Откройте галерею виджетов" } } }
+    },
+    "Refresh" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновить" } } }
+    },
+    "Search by name in the widget gallery." : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Найдите приложение по названию в галерее виджетов." } } }
+    },
+    "Selected day" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выбранный день" } } }
+    },
+    "To add another layout, Control-click the desktop and choose Edit Widgets." : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Чтобы добавить другой вариант, нажмите Control и щёлкните рабочий стол, затем выберите «Изменить виджеты»." } } }
+    },
+    "Two Months" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Два месяца" } } }
+    },
+    "Your calendar belongs on the desktop" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваш календарь — на рабочем столе" } } }
+    },
+    "Your widgets are ready" : {
+      "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваши виджеты готовы" } } }
+    }
+  },
+  "version" : "1.0"
+}
+

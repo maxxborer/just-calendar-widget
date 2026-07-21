@@ -1,0 +1,182 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B10000000000000000000001 /* JustCalendarWidgetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000001 /* JustCalendarWidgetApp.swift */; };
+		B10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000002 /* ContentView.swift */; };
+		B10000000000000000000003 /* CalendarGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000006 /* CalendarGrid.swift */; };
+		B10000000000000000000004 /* MonthOffsetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000007 /* MonthOffsetStore.swift */; };
+		B10000000000000000000005 /* WidgetKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000008 /* WidgetKind.swift */; };
+		B10000000000000000000006 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000009 /* Assets.xcassets */; };
+		B10000000000000000000007 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000010 /* Localizable.xcstrings */; };
+		B10000000000000000000008 /* JustCalendarWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = P10000000000000000000002 /* JustCalendarWidgetExtension.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C10000000000000000000001 /* CalendarWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000011 /* CalendarWidgets.swift */; };
+		C10000000000000000000002 /* ChangeMonthIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000012 /* ChangeMonthIntent.swift */; };
+		C10000000000000000000003 /* CalendarGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000006 /* CalendarGrid.swift */; };
+		C10000000000000000000004 /* MonthOffsetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000007 /* MonthOffsetStore.swift */; };
+		C10000000000000000000005 /* WidgetKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000008 /* WidgetKind.swift */; };
+		C10000000000000000000006 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000010 /* Localizable.xcstrings */; };
+		D10000000000000000000001 /* CalendarGridTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000014 /* CalendarGridTests.swift */; };
+		D10000000000000000000002 /* MonthOffsetStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000015 /* MonthOffsetStoreTests.swift */; };
+		D10000000000000000000003 /* Just Calendar Widget.app in Frameworks */ = {isa = PBXBuildFile; fileRef = P10000000000000000000001 /* Just Calendar Widget.app */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		PR10000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = PROJ000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = T10000000000000000000002;
+			remoteInfo = JustCalendarWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		PH10000000000000000000004 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (B10000000000000000000008 /* JustCalendarWidgetExtension.appex in Embed App Extensions */, );
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		F10000000000000000000001 /* JustCalendarWidgetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JustCalendarWidgetApp.swift; sourceTree = "<group>"; };
+		F10000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F10000000000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F10000000000000000000004 /* JustCalendarWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JustCalendarWidget.entitlements; sourceTree = "<group>"; };
+		F10000000000000000000006 /* CalendarGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarGrid.swift; sourceTree = "<group>"; };
+		F10000000000000000000007 /* MonthOffsetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthOffsetStore.swift; sourceTree = "<group>"; };
+		F10000000000000000000008 /* WidgetKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetKind.swift; sourceTree = "<group>"; };
+		F10000000000000000000009 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F10000000000000000000010 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		F10000000000000000000011 /* CalendarWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarWidgets.swift; sourceTree = "<group>"; };
+		F10000000000000000000012 /* ChangeMonthIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeMonthIntent.swift; sourceTree = "<group>"; };
+		F10000000000000000000013 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F10000000000000000000014 /* CalendarGridTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarGridTests.swift; sourceTree = "<group>"; };
+		F10000000000000000000015 /* MonthOffsetStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthOffsetStoreTests.swift; sourceTree = "<group>"; };
+		F10000000000000000000016 /* JustCalendarWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JustCalendarWidgetExtension.entitlements; sourceTree = "<group>"; };
+		P10000000000000000000001 /* Just Calendar Widget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Just Calendar Widget.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		P10000000000000000000002 /* JustCalendarWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = JustCalendarWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		P10000000000000000000003 /* JustCalendarWidgetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JustCalendarWidgetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		PH10000000000000000000021 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		PH10000000000000000000025 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		PH10000000000000000000028 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (D10000000000000000000003 /* Just Calendar Widget.app in Frameworks */, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		G10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (G10000000000000000000002 /* JustCalendarWidget */, G10000000000000000000006 /* JustCalendarWidgetTests */, G10000000000000000000007 /* Products */, );
+			sourceTree = "<group>";
+		};
+		G10000000000000000000002 /* JustCalendarWidget */ = {isa = PBXGroup; children = (G10000000000000000000003 /* App */, G10000000000000000000004 /* Shared */, G10000000000000000000005 /* WidgetExtension */, G10000000000000000000008 /* Resources */, ); path = JustCalendarWidget; sourceTree = "<group>"; };
+		G10000000000000000000003 /* App */ = {isa = PBXGroup; children = (F10000000000000000000001 /* JustCalendarWidgetApp.swift */, F10000000000000000000002 /* ContentView.swift */, F10000000000000000000003 /* Info.plist */, F10000000000000000000004 /* JustCalendarWidget.entitlements */, ); path = App; sourceTree = "<group>"; };
+		G10000000000000000000004 /* Shared */ = {isa = PBXGroup; children = (F10000000000000000000006 /* CalendarGrid.swift */, F10000000000000000000007 /* MonthOffsetStore.swift */, F10000000000000000000008 /* WidgetKind.swift */, ); path = Shared; sourceTree = "<group>"; };
+		G10000000000000000000005 /* WidgetExtension */ = {isa = PBXGroup; children = (F10000000000000000000011 /* CalendarWidgets.swift */, F10000000000000000000012 /* ChangeMonthIntent.swift */, F10000000000000000000013 /* Info.plist */, F10000000000000000000016 /* JustCalendarWidgetExtension.entitlements */, ); path = WidgetExtension; sourceTree = "<group>"; };
+		G10000000000000000000006 /* JustCalendarWidgetTests */ = {isa = PBXGroup; children = (F10000000000000000000014 /* CalendarGridTests.swift */, F10000000000000000000015 /* MonthOffsetStoreTests.swift */, ); path = JustCalendarWidgetTests; sourceTree = "<group>"; };
+		G10000000000000000000007 /* Products */ = {isa = PBXGroup; children = (P10000000000000000000001 /* Just Calendar Widget.app */, P10000000000000000000002 /* JustCalendarWidgetExtension.appex */, P10000000000000000000003 /* JustCalendarWidgetTests.xctest */, ); name = Products; sourceTree = "<group>"; };
+		G10000000000000000000008 /* Resources */ = {isa = PBXGroup; children = (F10000000000000000000009 /* Assets.xcassets */, F10000000000000000000010 /* Localizable.xcstrings */, ); path = Resources; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		T10000000000000000000001 /* JustCalendarWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CL10000000000000000000001 /* Build configuration list for PBXNativeTarget "JustCalendarWidget" */;
+			buildPhases = (PH10000000000000000000001 /* Sources */, PH10000000000000000000021 /* Frameworks */, PH10000000000000000000003 /* Resources */, PH10000000000000000000004 /* Embed App Extensions */, );
+			buildRules = ();
+			dependencies = (TD10000000000000000000001 /* PBXTargetDependency */, );
+			name = JustCalendarWidget;
+			productName = JustCalendarWidget;
+			productReference = P10000000000000000000001 /* Just Calendar Widget.app */;
+			productType = "com.apple.product-type.application";
+		};
+		T10000000000000000000002 /* JustCalendarWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CL10000000000000000000002 /* Build configuration list for PBXNativeTarget "JustCalendarWidgetExtension" */;
+			buildPhases = (PH10000000000000000000005 /* Sources */, PH10000000000000000000025 /* Frameworks */, PH10000000000000000000007 /* Resources */, );
+			buildRules = ();
+			dependencies = ();
+			name = JustCalendarWidgetExtension;
+			productName = JustCalendarWidgetExtension;
+			productReference = P10000000000000000000002 /* JustCalendarWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		T10000000000000000000003 /* JustCalendarWidgetTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CL10000000000000000000003 /* Build configuration list for PBXNativeTarget "JustCalendarWidgetTests" */;
+			buildPhases = (PH10000000000000000000008 /* Sources */, PH10000000000000000000028 /* Frameworks */, );
+			buildRules = ();
+			dependencies = (TD10000000000000000000002 /* PBXTargetDependency */, );
+			name = JustCalendarWidgetTests;
+			productName = JustCalendarWidgetTests;
+			productReference = P10000000000000000000003 /* JustCalendarWidgetTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		PROJ000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 2600; LastUpgradeCheck = 2600; TargetAttributes = {T10000000000000000000001 = {CreatedOnToolsVersion = 26.0;}; T10000000000000000000002 = {CreatedOnToolsVersion = 26.0;}; T10000000000000000000003 = {CreatedOnToolsVersion = 26.0;};};};
+			buildConfigurationList = CL10000000000000000000000 /* Build configuration list for PBXProject "JustCalendarWidget" */;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, ru, Base, );
+			mainGroup = G10000000000000000000001;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = G10000000000000000000007 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (T10000000000000000000001 /* JustCalendarWidget */, T10000000000000000000002 /* JustCalendarWidgetExtension */, T10000000000000000000003 /* JustCalendarWidgetTests */, );
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		PH10000000000000000000003 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B10000000000000000000006 /* Assets.xcassets in Resources */, B10000000000000000000007 /* Localizable.xcstrings in Resources */, ); runOnlyForDeploymentPostprocessing = 0; };
+		PH10000000000000000000007 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (C10000000000000000000006 /* Localizable.xcstrings in Resources */, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		PH10000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B10000000000000000000001 /* JustCalendarWidgetApp.swift in Sources */, B10000000000000000000002 /* ContentView.swift in Sources */, B10000000000000000000003 /* CalendarGrid.swift in Sources */, B10000000000000000000004 /* MonthOffsetStore.swift in Sources */, B10000000000000000000005 /* WidgetKind.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
+		PH10000000000000000000005 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (C10000000000000000000001 /* CalendarWidgets.swift in Sources */, C10000000000000000000002 /* ChangeMonthIntent.swift in Sources */, C10000000000000000000003 /* CalendarGrid.swift in Sources */, C10000000000000000000004 /* MonthOffsetStore.swift in Sources */, C10000000000000000000005 /* WidgetKind.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
+		PH10000000000000000000008 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (D10000000000000000000001 /* CalendarGridTests.swift in Sources */, D10000000000000000000002 /* MonthOffsetStoreTests.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		TD10000000000000000000001 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = T10000000000000000000002 /* JustCalendarWidgetExtension */; targetProxy = PR10000000000000000000001 /* PBXContainerItemProxy */; };
+		TD10000000000000000000002 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = T10000000000000000000001 /* JustCalendarWidget */; };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		CFG10000000000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_CXX_LANGUAGE_STANDARD = "gnu++20"; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; CLANG_WARN_DOCUMENTATION_COMMENTS = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = dwarf; ENABLE_TESTABILITY = YES; GCC_C_LANGUAGE_STANDARD = gnu17; GCC_NO_COMMON_BLOCKS = YES; MACOSX_DEPLOYMENT_TARGET = 14.0; SDKROOT = macosx; SWIFT_VERSION = 6.0;}; name = Debug; };
+		CFG10000000000000000000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_CXX_LANGUAGE_STANDARD = "gnu++20"; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; CLANG_WARN_DOCUMENTATION_COMMENTS = YES; COPY_PHASE_STRIP = YES; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; GCC_C_LANGUAGE_STANDARD = gnu17; GCC_NO_COMMON_BLOCKS = YES; MACOSX_DEPLOYMENT_TARGET = 14.0; SDKROOT = macosx; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_VERSION = 6.0;}; name = Release; };
+		CFG10000000000000000000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_ENTITLEMENTS = JustCalendarWidget/App/JustCalendarWidget.entitlements; CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = JustCalendarWidget/App/Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; PRODUCT_BUNDLE_IDENTIFIER = com.justcalendarwidget.app; PRODUCT_MODULE_NAME = Just_Calendar_Widget; PRODUCT_NAME = "Just Calendar Widget"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0;}; name = Debug; };
+		CFG10000000000000000000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_ENTITLEMENTS = JustCalendarWidget/App/JustCalendarWidget.entitlements; CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = JustCalendarWidget/App/Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; PRODUCT_BUNDLE_IDENTIFIER = com.justcalendarwidget.app; PRODUCT_MODULE_NAME = Just_Calendar_Widget; PRODUCT_NAME = "Just Calendar Widget"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0;}; name = Release; };
+		CFG10000000000000000000005 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_ENTITLEMENTS = JustCalendarWidget/WidgetExtension/JustCalendarWidgetExtension.entitlements; CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = JustCalendarWidget/WidgetExtension/Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks"; PRODUCT_BUNDLE_IDENTIFIER = com.justcalendarwidget.app.widgets; PRODUCT_MODULE_NAME = Just_Calendar_Widget_Widgets; PRODUCT_NAME = JustCalendarWidgetExtension; SKIP_INSTALL = YES; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0;}; name = Debug; };
+		CFG10000000000000000000006 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_ENTITLEMENTS = JustCalendarWidget/WidgetExtension/JustCalendarWidgetExtension.entitlements; CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = JustCalendarWidget/WidgetExtension/Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks"; PRODUCT_BUNDLE_IDENTIFIER = com.justcalendarwidget.app.widgets; PRODUCT_MODULE_NAME = Just_Calendar_Widget_Widgets; PRODUCT_NAME = JustCalendarWidgetExtension; SKIP_INSTALL = YES; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0;}; name = Release; };
+		CFG10000000000000000000007 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; GENERATE_INFOPLIST_FILE = YES; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks"; PRODUCT_BUNDLE_IDENTIFIER = com.justcalendarwidget.tests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Just Calendar Widget.app/Contents/MacOS/Just Calendar Widget";}; name = Debug; };
+		CFG10000000000000000000008 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; GENERATE_INFOPLIST_FILE = YES; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks"; PRODUCT_BUNDLE_IDENTIFIER = com.justcalendarwidget.tests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Just Calendar Widget.app/Contents/MacOS/Just Calendar Widget";}; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CL10000000000000000000000 /* Build configuration list for PBXProject "JustCalendarWidget" */ = {isa = XCConfigurationList; buildConfigurations = (CFG10000000000000000000001 /* Debug */, CFG10000000000000000000002 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		CL10000000000000000000001 /* Build configuration list for PBXNativeTarget "JustCalendarWidget" */ = {isa = XCConfigurationList; buildConfigurations = (CFG10000000000000000000003 /* Debug */, CFG10000000000000000000004 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		CL10000000000000000000002 /* Build configuration list for PBXNativeTarget "JustCalendarWidgetExtension" */ = {isa = XCConfigurationList; buildConfigurations = (CFG10000000000000000000005 /* Debug */, CFG10000000000000000000006 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		CL10000000000000000000003 /* Build configuration list for PBXNativeTarget "JustCalendarWidgetTests" */ = {isa = XCConfigurationList; buildConfigurations = (CFG10000000000000000000007 /* Debug */, CFG10000000000000000000008 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = PROJ000000000000000000001 /* Project object */;
+}
