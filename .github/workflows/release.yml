@@ -1,0 +1,79 @@
+name: Release on default branch
+
+on:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish release
+    if: github.actor != 'github-actions[bot]' && !contains(github.event.head_commit.message, '[skip release]')
+    runs-on: macos-latest
+    concurrency:
+      group: release-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Test source
+        run: |
+          xcodebuild \
+            -project JustCalendarWidget.xcodeproj \
+            -scheme JustCalendarWidget \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            -derivedDataPath "$RUNNER_TEMP/TestDerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            test
+      - name: Bump patch version
+        id: version
+        run: |
+          version="$(scripts/version.sh patch)"
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+      - name: Build application
+        run: |
+          xcodebuild \
+            -project JustCalendarWidget.xcodeproj \
+            -scheme JustCalendarWidget \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+      - name: Create ZIP archive
+        id: archive
+        run: |
+          app_path="$RUNNER_TEMP/DerivedData/Build/Products/Release/Just Calendar Widget.app"
+          app_name="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleName' "$app_path/Contents/Info.plist")"
+          version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_path/Contents/Info.plist")"
+          build="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$app_path/Contents/Info.plist")"
+          archive_path="$RUNNER_TEMP/Just-Calendar-Widget-${version}-unsigned.zip"
+          ditto -c -k --keepParent "$app_path" "$archive_path"
+          echo "name=$app_name" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          echo "path=$archive_path" >> "$GITHUB_OUTPUT"
+      - name: Commit version and create tag
+        env:
+          TAG: v${{ steps.version.outputs.value }}
+        run: |
+          git config user.name "maxxborer"
+          git config user.email "maxxborer@gmail.com"
+          git add Config/Version.xcconfig
+          git commit -m "chore(release): $TAG [skip release]"
+          git tag -a "$TAG" -m "Just Calendar Widget $TAG"
+          git push origin "HEAD:${GITHUB_REF_NAME}" "$TAG"
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.version.outputs.value }}
+        run: |
+          gh release create "$TAG" "${{ steps.archive.outputs.path }}" \
+            --generate-notes \
+            --title "${{ steps.archive.outputs.name }} ${{ steps.archive.outputs.version }}" \
+            --notes "Unsigned macOS build ${{ steps.archive.outputs.build }}. See [the installation guide](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/releasing.md#unsigned-builds) before opening it."

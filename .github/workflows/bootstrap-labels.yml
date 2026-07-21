@@ -1,0 +1,23 @@
+name: Bootstrap repository labels
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create and update standard labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create bug --color d73a4a --description "A reproducible defect" --force --repo "$GITHUB_REPOSITORY"
+          gh label create enhancement --color a2eeef --description "A proposed product improvement" --force --repo "$GITHUB_REPOSITORY"
+          gh label create feature --color 0071e3 --description "A user-facing feature" --force --repo "$GITHUB_REPOSITORY"
+          gh label create documentation --color 0075ca --description "Documentation or website change" --force --repo "$GITHUB_REPOSITORY"
+          gh label create maintenance --color 6e6e73 --description "Project maintenance or tooling" --force --repo "$GITHUB_REPOSITORY"
+          gh label create security --color b60205 --description "A security-related change" --force --repo "$GITHUB_REPOSITORY"
+          gh label create skip-changelog --color fef2c0 --description "Exclude from generated release notes" --force --repo "$GITHUB_REPOSITORY"
