@@ -178,7 +178,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: v${{ steps.version.outputs.value }}
         run: |
-          notes="$(cat \"${{ steps.note.outputs.path }}\")"
+          notes="$(cat "${{ steps.note.outputs.path }}")"
           gh release create "$TAG" "${{ steps.archive.outputs.path }}" \
             --generate-notes \
             --title "${{ steps.archive.outputs.name }} ${{ steps.archive.outputs.version }}" \

@@ -31,7 +31,7 @@ jobs:
             -project JustCalendarWidget.xcodeproj \
             -scheme JustCalendarWidget \
             -configuration Debug \
-            -destination 'platform=macOS,arch=arm64' \
+            -destination 'platform=macOS' \
             -derivedDataPath "$RUNNER_TEMP/CodeQLDerivedData" \
             CODE_SIGNING_ALLOWED=NO \
             build
