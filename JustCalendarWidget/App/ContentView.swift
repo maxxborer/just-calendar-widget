@@ -39,19 +39,18 @@ struct ContentView: View {
                     .controlSize(.large)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if status.addedKinds.isEmpty {
-                SetupGuide(currentStep: $currentStep, refresh: status.refresh)
+                SetupGuide(currentStep: $currentStep, refresh: reloadWidgets)
             } else {
                 WidgetStatusView(
                     addedKinds: status.addedKinds,
-                    refresh: status.refresh
+                    refresh: reloadWidgets
                 )
             }
         }
         .frame(minWidth: 680, minHeight: 500)
         .background(Color(nsColor: .windowBackgroundColor))
         .task {
-            status.refresh()
-            WidgetCenter.shared.reloadAllTimelines()
+            reloadWidgets()
             updateChecker.checkIfNeeded()
         }
         .onChange(of: scenePhase) { _, phase in
@@ -61,8 +60,8 @@ struct ContentView: View {
             }
         }
         .onOpenURL { url in
-            if let date = DayURL.date(from: url) {
-                CalendarApplication.open(on: date)
+            if url.scheme == "justcalendarwidget" {
+                CalendarApplication.open()
             }
         }
         .alert("A new version is available", isPresented: updateAlertBinding) {
@@ -76,6 +75,11 @@ struct ContentView: View {
         } message: {
             Text("Just Calendar Widget \(updateChecker.availableUpdate?.version.displayString ?? "") is ready to download.")
         }
+    }
+
+    private func reloadWidgets() {
+        WidgetCenter.shared.reloadAllTimelines()
+        status.refresh()
     }
 
     private var updateAlertBinding: Binding<Bool> {
@@ -348,34 +352,12 @@ private struct SetupStep {
     let description: LocalizedStringKey
 }
 
-private enum DayURL {
-    static func date(from url: URL) -> Date? {
-        guard url.scheme == "justcalendarwidget",
-              url.host == "day",
-              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let timestamp = components.queryItems?.first(where: { $0.name == "timestamp" })?.value,
-              let interval = TimeInterval(timestamp)
-        else {
-            return nil
-        }
-        return Date(timeIntervalSince1970: interval)
-    }
-}
-
 private enum CalendarApplication {
-    static func open(on date: Date) {
-        if let dateURL = destinationURL(for: date), NSWorkspace.shared.open(dateURL) {
-            return
-        }
-
+    static func open() {
         guard let calendarURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.iCal") else {
             return
         }
         NSWorkspace.shared.openApplication(at: calendarURL, configuration: .init())
-    }
-
-    private static func destinationURL(for date: Date) -> URL? {
-        URL(string: "calshow:\(date.timeIntervalSinceReferenceDate)")
     }
 }
 
