@@ -27,10 +27,9 @@ struct CalendarTimelineProvider: TimelineProvider {
 
     private func entry(for date: Date) -> CalendarEntry {
         let calendar = Calendar.autoupdatingCurrent
-        let sharedOffset = MonthOffsetStore.offset(for: kind)
         let grids = kind.monthOffsets.map { monthOffset in
             CalendarGrid.make(
-                for: CalendarGrid.monthDate(from: date, offset: sharedOffset + monthOffset, calendar: calendar),
+                for: CalendarGrid.monthDate(from: date, offset: monthOffset, calendar: calendar),
                 calendar: calendar
             )
         }
@@ -84,196 +83,99 @@ struct CalendarWidgetView: View {
     let entry: CalendarEntry
 
     var body: some View {
-        VStack(spacing: contentSpacing) {
-            CalendarWidgetHeader(kind: entry.kind, title: visibleRangeTitle)
-
+        GeometryReader { geometry in
             switch entry.kind {
             case .twoMonths:
-                HStack(alignment: .top, spacing: 10) {
+                HStack(spacing: 8) {
                     ForEach(entry.grids, id: \.monthStart) { grid in
-                        MonthGridView(grid: grid, style: .mini)
+                        MonthGridView(grid: grid, style: .compact, isPastMonth: isPastMonth(grid))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
             case .fourMonths:
                 LazyVGrid(
-                    columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
-                    spacing: 10
+                    columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)],
+                    spacing: 8
                 ) {
                     ForEach(entry.grids, id: \.monthStart) { grid in
-                        MonthGridView(grid: grid, style: .mini)
+                        MonthGridView(grid: grid, style: .compact, isPastMonth: isPastMonth(grid))
+                            .frame(height: (geometry.size.height - 8) / 2)
                     }
                 }
             case .currentMonth:
                 if let grid = entry.grids.first {
-                    MonthGridView(grid: grid, style: .large)
+                    MonthGridView(grid: grid, style: .expanded, isPastMonth: false)
                 }
             }
         }
-        .padding(entry.kind == .currentMonth ? 16 : 14)
+        .padding(10)
         .containerBackground(for: .widget) {
-            LinearGradient(
-                colors: [
-                    Color(nsColor: .controlBackgroundColor),
-                    Color.accentColor.opacity(0.07)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            Color(nsColor: .controlBackgroundColor)
         }
     }
 
-    private var contentSpacing: CGFloat {
-        switch entry.kind {
-        case .twoMonths:
-            10
-        case .fourMonths:
-            8
-        case .currentMonth:
-            14
+    private func isPastMonth(_ grid: CalendarGrid) -> Bool {
+        let calendar = Calendar.autoupdatingCurrent
+        guard let currentMonthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: entry.date)) else {
+            return false
         }
-    }
-
-    private var visibleRangeTitle: String {
-        guard let firstGrid = entry.grids.first else {
-            return "Calendar"
-        }
-
-        guard let lastGrid = entry.grids.last, firstGrid.monthStart != lastGrid.monthStart else {
-            return firstGrid.title
-        }
-
-        let firstMonth = firstGrid.monthStart.formatted(.dateTime.month(.wide))
-        let lastMonth = lastGrid.monthStart.formatted(.dateTime.month(.wide).year())
-        return "\(firstMonth) – \(lastMonth)"
-    }
-}
-
-private struct CalendarWidgetHeader: View {
-    let kind: WidgetKind
-    let title: String
-
-    var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "calendar")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.white)
-                .frame(width: 28, height: 28)
-                .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-            VStack(alignment: .leading, spacing: 1) {
-                Text("Calendar")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
-                Text(title)
-                    .font(.subheadline.weight(.bold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-            }
-
-            Spacer(minLength: 0)
-
-            Button(intent: ChangeMonthIntent(kind: kind, delta: -1)) {
-                Image(systemName: "chevron.left")
-                    .frame(width: 26, height: 26)
-                    .background(Color.accentColor.opacity(0.12), in: Circle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Previous month")
-
-            Button(intent: ChangeMonthIntent(kind: kind, delta: 1)) {
-                Image(systemName: "chevron.right")
-                    .frame(width: 26, height: 26)
-                    .background(Color.accentColor.opacity(0.12), in: Circle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Next month")
-        }
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(Color.accentColor)
+        return grid.monthStart < currentMonthStart
     }
 }
 
 private enum MonthGridStyle {
-    case mini
-    case large
+    case compact
+    case expanded
 
-    var titleFont: Font {
+    var weekdayFont: Font {
         switch self {
-        case .mini:
-            .caption.weight(.bold)
-        case .large:
-            .title3.weight(.bold)
+        case .compact:
+            .system(size: 9, weight: .semibold)
+        case .expanded:
+            .system(size: 12, weight: .semibold)
         }
     }
 
     var dayFont: Font {
         switch self {
-        case .mini:
-            .caption2.weight(.medium)
-        case .large:
-            .body.weight(.medium)
+        case .compact:
+            .system(size: 12, weight: .medium)
+        case .expanded:
+            .system(size: 18, weight: .medium)
         }
     }
 
-    var cellHeight: CGFloat {
+    var spacing: CGFloat {
         switch self {
-        case .mini:
-            18
-        case .large:
-            35
-        }
-    }
-
-    var verticalSpacing: CGFloat {
-        switch self {
-        case .mini:
-            3
-        case .large:
+        case .compact:
+            2
+        case .expanded:
             6
         }
     }
 
-    var cardPadding: CGFloat {
-        switch self {
-        case .mini:
-            8
-        case .large:
-            12
-        }
-    }
+    var cornerRadius: CGFloat { self == .compact ? 12 : 18 }
+
+    var padding: CGFloat { self == .compact ? 6 : 14 }
 }
 
 private struct MonthGridView: View {
     let grid: CalendarGrid
     let style: MonthGridStyle
+    let isPastMonth: Bool
 
     var body: some View {
-        VStack(spacing: style.verticalSpacing) {
-            HStack(spacing: 6) {
-                Text(style == .large ? grid.monthStart.formatted(.dateTime.month(.wide)) : grid.title)
-                    .font(style.titleFont)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.72)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                if style == .large {
-                    Text(grid.monthStart.formatted(.dateTime.year()))
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-            }
-
+        VStack(spacing: style.spacing) {
             HStack(spacing: 0) {
                 ForEach(Array(grid.weekdaySymbols.enumerated()), id: \.offset) { _, symbol in
                     Text(symbol.uppercased())
-                        .font(.system(size: style == .mini ? 8 : 10, weight: .semibold))
+                        .font(style.weekdayFont)
                         .foregroundStyle(Color.accentColor.opacity(0.8))
                         .frame(maxWidth: .infinity)
                 }
             }
 
-            VStack(spacing: style == .mini ? 1 : 5) {
+            VStack(spacing: style.spacing) {
                 ForEach(Array(grid.weeks.enumerated()), id: \.offset) { _, week in
                     HStack(spacing: 0) {
                         ForEach(Array(week.enumerated()), id: \.offset) { _, day in
@@ -283,13 +185,14 @@ private struct MonthGridView: View {
                 }
             }
         }
-        .padding(style.cardPadding)
-        .frame(maxWidth: .infinity, alignment: .top)
-        .background(Color.primary.opacity(style == .mini ? 0.045 : 0.035), in: RoundedRectangle(cornerRadius: style == .mini ? 12 : 16, style: .continuous))
+        .padding(style.padding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.primary.opacity(style == .compact ? 0.045 : 0.03), in: RoundedRectangle(cornerRadius: style.cornerRadius, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: style == .mini ? 12 : 16, style: .continuous)
+            RoundedRectangle(cornerRadius: style.cornerRadius, style: .continuous)
                 .stroke(Color.accentColor.opacity(0.12), lineWidth: 1)
         }
+        .opacity(isPastMonth ? 0.56 : 1)
     }
 }
 
@@ -307,24 +210,21 @@ private struct DayCell: View {
                 .accessibilityLabel(day.date.formatted(date: .complete, time: .omitted))
             } else {
                 Color.clear
-                    .frame(height: style.cellHeight)
+                    .frame(maxHeight: .infinity)
             }
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     @ViewBuilder
     private func label(for day: CalendarDay) -> some View {
         Text(day.number, format: .number)
             .font(style.dayFont)
-            .foregroundStyle(day.isToday ? Color.white : day.isSelected ? Color.accentColor : Color.primary)
-            .frame(maxWidth: .infinity, minHeight: style.cellHeight)
+            .foregroundStyle(day.isToday ? Color.white : Color.primary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background {
                 if day.isToday {
                     Circle().fill(Color.accentColor)
-                } else if day.isSelected {
-                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                        .fill(Color.accentColor.opacity(0.14))
                 }
             }
             .contentShape(Rectangle())

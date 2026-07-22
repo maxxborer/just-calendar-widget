@@ -31,7 +31,6 @@ struct ContentView: View {
     @ObservedObject var updateChecker: UpdateChecker
     @StateObject private var status = WidgetStatus()
     @State private var currentStep = 0
-    @State private var selectedDate: Date?
 
     var body: some View {
         Group {
@@ -44,7 +43,6 @@ struct ContentView: View {
             } else {
                 WidgetStatusView(
                     addedKinds: status.addedKinds,
-                    selectedDate: selectedDate,
                     refresh: status.refresh
                 )
             }
@@ -62,7 +60,9 @@ struct ContentView: View {
             }
         }
         .onOpenURL { url in
-            selectedDate = DayURL.date(from: url)
+            if let date = DayURL.date(from: url) {
+                CalendarApplication.open(on: date)
+            }
         }
         .alert("A new version is available", isPresented: updateAlertBinding) {
             Button("Open Release") {
@@ -174,7 +174,6 @@ private struct SetupGuide: View {
 
 private struct WidgetStatusView: View {
     let addedKinds: Set<WidgetKind>
-    let selectedDate: Date?
     let refresh: () -> Void
 
     var body: some View {
@@ -198,10 +197,6 @@ private struct WidgetStatusView: View {
                 Button("Refresh", systemImage: "arrow.clockwise") {
                     refresh()
                 }
-            }
-
-            if let selectedDate {
-                SelectedDateCard(date: selectedDate)
             }
 
             Text("Added layouts")
@@ -346,28 +341,6 @@ private struct AddedWidgetCard: View {
     }
 }
 
-private struct SelectedDateCard: View {
-    let date: Date
-
-    var body: some View {
-        HStack(spacing: 14) {
-            Image(systemName: "calendar.badge.checkmark")
-                .font(.title2)
-                .foregroundStyle(Color.accentColor)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Selected day")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(date.formatted(date: .complete, time: .omitted))
-                    .font(.headline)
-            }
-            Spacer()
-        }
-        .padding(16)
-        .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-    }
-}
-
 private struct SetupStep {
     let icon: String
     let title: LocalizedStringKey
@@ -385,6 +358,23 @@ private enum DayURL {
             return nil
         }
         return Date(timeIntervalSince1970: interval)
+    }
+}
+
+private enum CalendarApplication {
+    static func open(on date: Date) {
+        if let dateURL = destinationURL(for: date), NSWorkspace.shared.open(dateURL) {
+            return
+        }
+
+        guard let calendarURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.iCal") else {
+            return
+        }
+        NSWorkspace.shared.openApplication(at: calendarURL, configuration: .init())
+    }
+
+    private static func destinationURL(for date: Date) -> URL? {
+        URL(string: "calshow:\(date.timeIntervalSinceReferenceDate)")
     }
 }
 

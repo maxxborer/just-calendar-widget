@@ -10,9 +10,9 @@ A focused macOS calendar companion with exactly three desktop widgets. Built wit
 
 ## What it is
 
-Just Calendar Widget puts a clean, blue, macOS-style calendar on your desktop. It follows the system calendar, locale, first weekday, and time zone; the current day uses the system blue accent. No calendar events are read or stored.
+Just Calendar Widget puts a clean, blue, macOS-style calendar on your desktop. It follows the system calendar, locale, first weekday, and time zone; the current day uses the system blue accent. No calendar events are read or stored. The calendar grid uses the whole widget surface — without a title, month caption, icon, or navigation controls.
 
-![Large calendar widget preview](docs/images/widget-preview.png)
+![Large calendar widget preview](docs/images/calendar-widget-preview.svg)
 
 | Widget | macOS size | Months |
 | --- | --- | --- |
@@ -37,7 +37,7 @@ After you try to open the app from Applications, choose **Apple menu → System 
 
 Open the app once **from Applications**. If no widget is installed, it shows a three-step guide. Then Control-click the desktop, choose **Edit Widgets**, search for **Just Calendar Widget**, and pick one of the layouts above. WidgetKit registers a widget only after its containing app has been launched at least once after installation.
 
-Use the blue chevrons in a widget to browse months. The selected period is shared by all copies of that widget type. Selecting a date opens the app and highlights that day.
+The two- and four-month layouts show the current period at a glance; the previous month in the four-month layout is intentionally softer. Select a day to open Calendar.app on that date when macOS supports the system calendar deep link; otherwise, Calendar.app opens normally.
 
 ## Updates and privacy
 

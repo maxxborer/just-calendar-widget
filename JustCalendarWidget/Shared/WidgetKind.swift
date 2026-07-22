@@ -1,7 +1,6 @@
-import AppIntents
 import Foundation
 
-enum WidgetKind: String, CaseIterable, Codable, Sendable {
+enum WidgetKind: String, CaseIterable, Sendable {
     case twoMonths = "JustCalendarWidget.twoMonths"
     case fourMonths = "JustCalendarWidget.fourMonths"
     case currentMonth = "JustCalendarWidget.currentMonth"
@@ -28,18 +27,3 @@ enum WidgetKind: String, CaseIterable, Codable, Sendable {
         }
     }
 }
-
-extension WidgetKind: AppEnum {
-    static var typeDisplayRepresentation: TypeDisplayRepresentation {
-        TypeDisplayRepresentation(name: "Calendar widget")
-    }
-
-    static var caseDisplayRepresentations: [WidgetKind: DisplayRepresentation] {
-        [
-            .twoMonths: DisplayRepresentation(title: "Two Months"),
-            .fourMonths: DisplayRepresentation(title: "Four Months"),
-            .currentMonth: DisplayRepresentation(title: "Current Month")
-        ]
-    }
-}
-

@@ -4,21 +4,18 @@ struct CalendarDay: Identifiable, Equatable, Sendable {
     let date: Date
     let number: Int
     let isToday: Bool
-    let isSelected: Bool
 
     var id: Date { date }
 }
 
 struct CalendarGrid: Equatable, Sendable {
     let monthStart: Date
-    let title: String
     let weekdaySymbols: [String]
     let weeks: [[CalendarDay?]]
 
     static func make(
         for date: Date,
-        calendar: Calendar = .autoupdatingCurrent,
-        selectedDate: Date? = nil
+        calendar: Calendar = .autoupdatingCurrent
     ) -> CalendarGrid {
         let monthComponents = calendar.dateComponents([.year, .month], from: date)
         guard let monthStart = calendar.date(from: monthComponents),
@@ -27,7 +24,6 @@ struct CalendarGrid: Equatable, Sendable {
         else {
             return CalendarGrid(
                 monthStart: date,
-                title: date.formatted(.dateTime.month(.wide).year()),
                 weekdaySymbols: weekdaySymbols(for: calendar),
                 weeks: []
             )
@@ -46,8 +42,7 @@ struct CalendarGrid: Equatable, Sendable {
             return CalendarDay(
                 date: dayDate,
                 number: dayNumber,
-                isToday: calendar.isDateInToday(dayDate),
-                isSelected: selectedDate.map { calendar.isDate(dayDate, inSameDayAs: $0) } ?? false
+                isToday: calendar.isDateInToday(dayDate)
             )
         }
 
@@ -57,7 +52,6 @@ struct CalendarGrid: Equatable, Sendable {
 
         return CalendarGrid(
             monthStart: monthStart,
-            title: monthStart.formatted(.dateTime.month(.wide).year()),
             weekdaySymbols: weekdaySymbols(for: calendar),
             weeks: weeks
         )
