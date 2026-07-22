@@ -222,7 +222,7 @@ private enum MonthGridStyle {
     var weekdayFont: Font {
         switch self {
         case .compact:
-            .system(size: 9, weight: .semibold)
+            .system(size: 11, weight: .semibold)
         case .expanded:
             .system(size: 12, weight: .semibold)
         }
@@ -231,7 +231,7 @@ private enum MonthGridStyle {
     var dayFont: Font {
         switch self {
         case .compact:
-            .system(size: 12, weight: .medium)
+            .system(size: 13, weight: .medium)
         case .expanded:
             .system(size: 18, weight: .medium)
         }
@@ -246,11 +246,22 @@ private enum MonthGridStyle {
         }
     }
 
-    var cornerRadius: CGFloat { self == .compact ? 12 : 18 }
+    var monthTitleFont: Font {
+        switch self {
+        case .compact:
+            .system(size: 13, weight: .semibold)
+        case .expanded:
+            .system(size: 20, weight: .semibold)
+        }
+    }
+
+    var cornerRadius: CGFloat { self == .compact ? 24 : 28 }
 
     var padding: CGFloat { self == .compact ? 4 : 8 }
 
-    var weekdayHeight: CGFloat { self == .compact ? 12 : 16 }
+    var weekdayHeight: CGFloat { self == .compact ? 14 : 16 }
+
+    var monthTitleSpacing: CGFloat { self == .compact ? 2 : 6 }
 
     var todayDiameterScale: CGFloat { self == .compact ? 0.9 : 0.94 }
 }
@@ -261,7 +272,16 @@ private struct MonthGridView: View {
     let isPastMonth: Bool
 
     var body: some View {
-        CalendarMonthCanvas(grid: grid, style: style)
+        VStack(alignment: .leading, spacing: style.monthTitleSpacing) {
+            Text(grid.monthTitle)
+                .font(style.monthTitleFont)
+                .foregroundStyle(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            CalendarMonthCanvas(grid: grid, style: style)
+        }
         .padding(style.padding)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.primary.opacity(style == .compact ? 0.045 : 0.03), in: RoundedRectangle(cornerRadius: style.cornerRadius, style: .continuous))
@@ -333,7 +353,7 @@ private struct CalendarMonthCanvas: View {
 }
 
 private enum CalendarDeepLink {
-    static let url = URL(fileURLWithPath: "/System/Applications/Calendar.app")
+    static let url = URL(string: "justcalendarwidget://calendar")
 }
 
 @main

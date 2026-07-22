@@ -10,6 +10,7 @@ struct CalendarDay: Identifiable, Equatable, Sendable {
 
 struct CalendarGrid: Equatable, Sendable {
     let monthStart: Date
+    let monthTitle: String
     let weekdaySymbols: [String]
     let weeks: [[CalendarDay?]]
 
@@ -24,6 +25,7 @@ struct CalendarGrid: Equatable, Sendable {
         else {
             return CalendarGrid(
                 monthStart: date,
+                monthTitle: monthTitle(for: date, calendar: calendar),
                 weekdaySymbols: weekdaySymbols(for: calendar),
                 weeks: []
             )
@@ -52,6 +54,7 @@ struct CalendarGrid: Equatable, Sendable {
 
         return CalendarGrid(
             monthStart: monthStart,
+            monthTitle: monthTitle(for: monthStart, calendar: calendar),
             weekdaySymbols: weekdaySymbols(for: calendar),
             weeks: weeks
         )
@@ -82,6 +85,15 @@ struct CalendarGrid: Equatable, Sendable {
         return (0 ..< 7).compactMap { index in
             symbols[safe: (firstIndex + index) % symbols.count]
         }
+    }
+
+    private static func monthTitle(for date: Date, calendar: Calendar) -> String {
+        let monthIndex = calendar.component(.month, from: date) - 1
+        let monthSymbols = calendar.standaloneMonthSymbols
+        guard monthSymbols.indices.contains(monthIndex) else {
+            return ""
+        }
+        return monthSymbols[monthIndex].localizedCapitalized
     }
 }
 

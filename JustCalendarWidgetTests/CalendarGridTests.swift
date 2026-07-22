@@ -35,6 +35,12 @@ final class CalendarGridTests: XCTestCase {
         XCTAssertEqual(grid.weekdaySymbols.count, 7)
     }
 
+    func testMonthTitleUsesCalendarLocale() throws {
+        let grid = CalendarGrid.make(for: try date(year: 2026, month: 2, day: 1), calendar: calendar)
+
+        XCTAssertEqual(grid.monthTitle, calendar.standaloneMonthSymbols[1].localizedCapitalized)
+    }
+
     private func date(year: Int, month: Int, day: Int) throws -> Date {
         let components = DateComponents(calendar: calendar, year: year, month: month, day: day)
         return try XCTUnwrap(calendar.date(from: components))
