@@ -51,6 +51,7 @@ struct ContentView: View {
         .background(Color(nsColor: .windowBackgroundColor))
         .task {
             status.refresh()
+            WidgetCenter.shared.reloadAllTimelines()
             updateChecker.checkIfNeeded()
         }
         .onChange(of: scenePhase) { _, phase in

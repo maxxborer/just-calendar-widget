@@ -83,7 +83,7 @@ struct CalendarWidgetView: View {
     let entry: CalendarEntry
 
     var body: some View {
-        GeometryReader { geometry in
+        Group {
             switch entry.kind {
             case .twoMonths:
                 HStack(spacing: 8) {
@@ -93,13 +93,16 @@ struct CalendarWidgetView: View {
                     }
                 }
             case .fourMonths:
-                LazyVGrid(
-                    columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)],
-                    spacing: 8
-                ) {
-                    ForEach(entry.grids, id: \.monthStart) { grid in
-                        MonthGridView(grid: grid, style: .compact, isPastMonth: isPastMonth(grid))
-                            .frame(height: (geometry.size.height - 8) / 2)
+                Grid(horizontalSpacing: 8, verticalSpacing: 8) {
+                    GridRow {
+                        ForEach(entry.grids.prefix(2), id: \.monthStart) { grid in
+                            MonthGridView(grid: grid, style: .compact, isPastMonth: isPastMonth(grid))
+                        }
+                    }
+                    GridRow {
+                        ForEach(entry.grids.dropFirst(2), id: \.monthStart) { grid in
+                            MonthGridView(grid: grid, style: .compact, isPastMonth: isPastMonth(grid))
+                        }
                     }
                 }
             case .currentMonth:
@@ -109,6 +112,7 @@ struct CalendarWidgetView: View {
             }
         }
         .padding(10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .containerBackground(for: .widget) {
             Color(nsColor: .controlBackgroundColor)
         }
@@ -182,8 +186,10 @@ private struct MonthGridView: View {
                             DayCell(day: day, style: style)
                         }
                     }
+                    .frame(maxHeight: .infinity)
                 }
             }
+            .frame(maxHeight: .infinity)
         }
         .padding(style.padding)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -210,10 +216,9 @@ private struct DayCell: View {
                 .accessibilityLabel(day.date.formatted(date: .complete, time: .omitted))
             } else {
                 Color.clear
-                    .frame(maxHeight: .infinity)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity)
     }
 
     @ViewBuilder
