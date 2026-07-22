@@ -137,11 +137,13 @@ final class UpdateChecker: ObservableObject {
 
         Task { [weak self, session] in
             do {
-                let (data, _) = try await session.data(from: releaseURL)
+                var request = URLRequest(url: releaseURL)
+                request.timeoutInterval = 15
+                let (data, _) = try await session.data(for: request)
                 let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
                 self?.finishCheck(with: release, checkedAt: Date())
             } catch {
-                self?.finishCheck(with: error, checkedAt: Date())
+                self?.finishCheck(with: error)
             }
         }
     }
@@ -164,11 +166,11 @@ final class UpdateChecker: ObservableObject {
         availableUpdate = AvailableUpdate(version: latestVersion, releaseURL: release.htmlURL)
     }
 
-    private func finishCheck(with error: Error, checkedAt: Date) {
+    private func finishCheck(with _: Error) {
         isChecking = false
-        lastCheckedAt = checkedAt
-        defaults.set(checkedAt.timeIntervalSince1970, forKey: Preference.lastCheckedAt)
-        lastErrorDescription = error.localizedDescription
+        lastCheckedAt = nil
+        defaults.removeObject(forKey: Preference.lastCheckedAt)
+        lastErrorDescription = "Couldn’t check for updates. Check your internet connection and try again."
     }
 }
 
