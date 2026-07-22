@@ -97,6 +97,7 @@ struct TwoMonthsCalendarWidget: Widget {
         .configurationDisplayName("Two Months")
         .description("The current and next calendar month.")
         .supportedFamilies([.systemMedium])
+        .contentMarginsDisabled()
     }
 }
 
@@ -111,6 +112,7 @@ struct FourMonthsCalendarWidget: Widget {
         .configurationDisplayName("Four Months")
         .description("The previous, current, and two following calendar months.")
         .supportedFamilies([.systemLarge])
+        .contentMarginsDisabled()
     }
 }
 
@@ -125,6 +127,7 @@ struct CurrentMonthCalendarWidget: Widget {
         .configurationDisplayName("Current Month")
         .description("A large view of the current calendar month.")
         .supportedFamilies([.systemLarge])
+        .contentMarginsDisabled()
     }
 }
 
@@ -152,7 +155,7 @@ struct CalendarWidgetView: View {
                 }
             }
         }
-        .padding(10)
+        .padding(6)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .widgetURL(CalendarDeepLink.url)
         .containerBackground(for: .widget) {
@@ -245,9 +248,11 @@ private enum MonthGridStyle {
 
     var cornerRadius: CGFloat { self == .compact ? 12 : 18 }
 
-    var padding: CGFloat { self == .compact ? 6 : 14 }
+    var padding: CGFloat { self == .compact ? 4 : 8 }
 
     var weekdayHeight: CGFloat { self == .compact ? 12 : 16 }
+
+    var todayDiameterScale: CGFloat { self == .compact ? 0.9 : 0.94 }
 }
 
 private struct MonthGridView: View {
@@ -306,7 +311,7 @@ private struct CalendarMonthCanvas: View {
                     )
 
                     if day.isToday {
-                        let diameter = min(columnWidth, rowHeight) * 0.72
+                        let diameter = min(columnWidth, rowHeight) * style.todayDiameterScale
                         let circle = CGRect(
                             x: center.x - diameter / 2,
                             y: center.y - diameter / 2,
@@ -328,7 +333,7 @@ private struct CalendarMonthCanvas: View {
 }
 
 private enum CalendarDeepLink {
-    static let url = URL(string: "justcalendarwidget://calendar")
+    static let url = URL(fileURLWithPath: "/System/Applications/Calendar.app")
 }
 
 @main
