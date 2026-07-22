@@ -28,7 +28,6 @@ final class WidgetStatus: ObservableObject {
 
 struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
-    @ObservedObject var updateChecker: UpdateChecker
     @StateObject private var status = WidgetStatus()
     @State private var currentStep = 0
 
@@ -51,29 +50,16 @@ struct ContentView: View {
         .background(Color(nsColor: .windowBackgroundColor))
         .task {
             reloadWidgets()
-            updateChecker.checkIfNeeded()
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 status.refresh()
-                updateChecker.checkIfNeeded()
             }
         }
         .onOpenURL { url in
             if url.scheme == "justcalendarwidget" {
                 CalendarApplication.open()
             }
-        }
-        .alert("A new version is available", isPresented: updateAlertBinding) {
-            Button("Open Release") {
-                updateChecker.openAvailableUpdate()
-                updateChecker.dismissAvailableUpdate()
-            }
-            Button("Not Now", role: .cancel) {
-                updateChecker.dismissAvailableUpdate()
-            }
-        } message: {
-            Text("Just Calendar Widget \(updateChecker.availableUpdate?.version.displayString ?? "") is ready to download.")
         }
     }
 
@@ -82,16 +68,6 @@ struct ContentView: View {
         status.refresh()
     }
 
-    private var updateAlertBinding: Binding<Bool> {
-        Binding(
-            get: { updateChecker.availableUpdate != nil },
-            set: { isPresented in
-                if !isPresented {
-                    updateChecker.dismissAvailableUpdate()
-                }
-            }
-        )
-    }
 }
 
 private struct SetupGuide: View {
@@ -362,45 +338,23 @@ private enum CalendarApplication {
 }
 
 struct SettingsView: View {
-    @ObservedObject var updateChecker: UpdateChecker
-    @State private var automaticallyCheckForUpdates: Bool
+    private static let releasesURL = URL(string: "https://github.com/maxxborer/just-calendar-widget/releases")
 
-    init(updateChecker: UpdateChecker) {
-        self.updateChecker = updateChecker
-        _automaticallyCheckForUpdates = State(initialValue: updateChecker.automaticChecksEnabled)
+    private var currentVersion: String {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")
+        return String(describing: version ?? "0.0.0")
     }
 
     var body: some View {
         Form {
             Section("Software Updates") {
-                Toggle("Check for updates automatically", isOn: $automaticallyCheckForUpdates)
-                    .onChange(of: automaticallyCheckForUpdates) { _, isEnabled in
-                        updateChecker.setAutomaticChecksEnabled(isEnabled)
-                    }
-
-                Text("When enabled, Just Calendar Widget checks the public GitHub Releases feed at most once every seven days.")
+                Text("Current version \(currentVersion)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                HStack {
-                    Button(updateChecker.isChecking ? "Checking…" : "Check Now") {
-                        updateChecker.checkNow()
-                    }
-                    .disabled(updateChecker.isChecking)
-
-                    Spacer()
-
-                    if let lastCheckedAt = updateChecker.lastCheckedAt {
-                        Text("Last checked \(lastCheckedAt.formatted(date: .abbreviated, time: .shortened))")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                if let lastErrorDescription = updateChecker.lastErrorDescription {
-                    Text(lastErrorDescription)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                if let releasesURL = Self.releasesURL {
+                    Link("Check Update", destination: releasesURL)
+                        .buttonStyle(.bordered)
                 }
             }
         }
