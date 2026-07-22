@@ -35,10 +35,14 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             test
 
-      - name: Bump patch version
+      - name: Bump release version
         id: version
         run: |
-          version="$(scripts/version.sh patch)"
+          release_type=patch
+          if git log -1 --format=%s | grep -Fq '[release:major]'; then
+            release_type=major
+          fi
+          version="$(scripts/version.sh "$release_type")"
           echo "value=$version" >> "$GITHUB_OUTPUT"
 
       - name: Import Developer ID certificate
@@ -175,8 +179,11 @@ jobs:
         run: |
           git config user.name "maxxborer"
           git config user.email "maxxborer@gmail.com"
+          latest_date="$(git log -1 --format=%aI | sed 's/\([+-][0-9][0-9]\):\([0-9][0-9]\)$/\1\2/')"
+          latest_epoch="$(TZ=Asia/Almaty date -j -f '%Y-%m-%dT%H:%M:%S%z' "$latest_date" '+%s')"
+          release_commit_date="$(TZ=Asia/Almaty date -r "$latest_epoch" -v+5M '+%Y-%m-%dT%H:%M:%S%z')"
           git add Config/Version.xcconfig
-          git commit -m "chore(release): $TAG [skip release]"
+          GIT_AUTHOR_DATE="$release_commit_date" GIT_COMMITTER_DATE="$release_commit_date" git commit -m "chore(release): $TAG [skip release]"
           git tag -a "$TAG" -m "Just Calendar Widget $TAG"
           git push origin "HEAD:${GITHUB_REF_NAME}" "$TAG"
 
