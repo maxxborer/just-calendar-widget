@@ -8,24 +8,29 @@ struct CalendarEntry: TimelineEntry {
     let grids: [CalendarGrid]
 }
 
-struct CalendarTimelineProvider: TimelineProvider {
+struct CalendarTimelineProvider: @MainActor TimelineProvider {
     let kind: WidgetKind
 
+    @MainActor
     func placeholder(in context: Context) -> CalendarEntry {
-        entry(for: Date())
+        CalendarEntryCache.shared.entry(for: Date(), kind: kind)
     }
 
+    @MainActor
     func getSnapshot(in context: Context, completion: @escaping (CalendarEntry) -> Void) {
-        completion(entry(for: Date()))
+        completion(CalendarEntryCache.shared.entry(for: Date(), kind: kind))
     }
 
+    @MainActor
     func getTimeline(in context: Context, completion: @escaping (Timeline<CalendarEntry>) -> Void) {
         let now = Date()
-        let entry = entry(for: now)
-        completion(Timeline(entries: [entry], policy: .after(CalendarGrid.nextMidnight(after: now))))
+        let entry = CalendarEntryCache.shared.entry(for: now, kind: kind)
+        completion(Timeline(entries: [entry], policy: .after(CalendarEntryCache.nextHour(after: now))))
     }
+}
 
-    private func entry(for date: Date) -> CalendarEntry {
+private enum CalendarEntryFactory {
+    static func make(for date: Date, kind: WidgetKind) -> CalendarEntry {
         let calendar = Calendar.autoupdatingCurrent
         let grids = kind.monthOffsets.map { monthOffset in
             CalendarGrid.make(
@@ -34,6 +39,50 @@ struct CalendarTimelineProvider: TimelineProvider {
             )
         }
         return CalendarEntry(date: date, kind: kind, grids: grids)
+    }
+}
+
+@MainActor
+private final class CalendarEntryCache {
+    static let shared = CalendarEntryCache()
+
+    private var entries: [CacheKey: CalendarEntry] = [:]
+
+    func entry(for date: Date, kind: WidgetKind) -> CalendarEntry {
+        let key = CacheKey(date: date, kind: kind)
+        if let cachedEntry = entries[key] {
+            return cachedEntry
+        }
+
+        entries = entries.filter { $0.key.hour == key.hour }
+        let entry = CalendarEntryFactory.make(for: date, kind: kind)
+        entries[key] = entry
+        return entry
+    }
+
+    static func nextHour(after date: Date) -> Date {
+        Calendar.autoupdatingCurrent.nextDate(
+            after: date,
+            matching: DateComponents(minute: 0, second: 0),
+            matchingPolicy: .nextTime
+        ) ?? date.addingTimeInterval(3_600)
+    }
+
+    private struct CacheKey: Hashable {
+        let kind: String
+        let hour: Int
+        let firstWeekday: Int
+        let localeIdentifier: String
+        let timeZoneIdentifier: String
+
+        init(date: Date, kind: WidgetKind) {
+            let calendar = Calendar.autoupdatingCurrent
+            self.kind = kind.rawValue
+            hour = Int(date.timeIntervalSince1970 / 3_600)
+            firstWeekday = calendar.firstWeekday
+            localeIdentifier = calendar.locale?.identifier ?? ""
+            timeZoneIdentifier = calendar.timeZone.identifier
+        }
     }
 }
 
@@ -86,23 +135,15 @@ struct CalendarWidgetView: View {
         Group {
             switch entry.kind {
             case .twoMonths:
-                HStack(spacing: 8) {
+                EqualGridLayout(columns: 2, rows: 1, spacing: 8) {
                     ForEach(entry.grids, id: \.monthStart) { grid in
                         MonthGridView(grid: grid, style: .compact, isPastMonth: isPastMonth(grid))
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
             case .fourMonths:
-                Grid(horizontalSpacing: 8, verticalSpacing: 8) {
-                    GridRow {
-                        ForEach(entry.grids.prefix(2), id: \.monthStart) { grid in
-                            MonthGridView(grid: grid, style: .compact, isPastMonth: isPastMonth(grid))
-                        }
-                    }
-                    GridRow {
-                        ForEach(entry.grids.dropFirst(2), id: \.monthStart) { grid in
-                            MonthGridView(grid: grid, style: .compact, isPastMonth: isPastMonth(grid))
-                        }
+                EqualGridLayout(columns: 2, rows: 2, spacing: 8) {
+                    ForEach(entry.grids, id: \.monthStart) { grid in
+                        MonthGridView(grid: grid, style: .compact, isPastMonth: isPastMonth(grid))
                     }
                 }
             case .currentMonth:
@@ -113,6 +154,7 @@ struct CalendarWidgetView: View {
         }
         .padding(10)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .widgetURL(CalendarDeepLink.url)
         .containerBackground(for: .widget) {
             Color(nsColor: .controlBackgroundColor)
         }
@@ -124,6 +166,49 @@ struct CalendarWidgetView: View {
             return false
         }
         return grid.monthStart < currentMonthStart
+    }
+}
+
+private struct EqualGridLayout: Layout {
+    let columns: Int
+    let rows: Int
+    let spacing: CGFloat
+
+    func sizeThatFits(
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) -> CGSize {
+        let fallbackWidth = 220 * CGFloat(columns) + spacing * CGFloat(columns - 1)
+        let fallbackHeight = 180 * CGFloat(rows) + spacing * CGFloat(rows - 1)
+        return CGSize(
+            width: proposal.width ?? fallbackWidth,
+            height: proposal.height ?? fallbackHeight
+        )
+    }
+
+    func placeSubviews(
+        in bounds: CGRect,
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) {
+        let cellWidth = (bounds.width - spacing * CGFloat(columns - 1)) / CGFloat(columns)
+        let cellHeight = (bounds.height - spacing * CGFloat(rows - 1)) / CGFloat(rows)
+
+        for index in subviews.indices {
+            let row = index / columns
+            let column = index % columns
+            let origin = CGPoint(
+                x: bounds.minX + CGFloat(column) * (cellWidth + spacing),
+                y: bounds.minY + CGFloat(row) * (cellHeight + spacing)
+            )
+            subviews[index].place(
+                at: origin,
+                anchor: .topLeading,
+                proposal: ProposedViewSize(width: cellWidth, height: cellHeight)
+            )
+        }
     }
 }
 
@@ -161,6 +246,8 @@ private enum MonthGridStyle {
     var cornerRadius: CGFloat { self == .compact ? 12 : 18 }
 
     var padding: CGFloat { self == .compact ? 6 : 14 }
+
+    var weekdayHeight: CGFloat { self == .compact ? 12 : 16 }
 }
 
 private struct MonthGridView: View {
@@ -169,28 +256,7 @@ private struct MonthGridView: View {
     let isPastMonth: Bool
 
     var body: some View {
-        VStack(spacing: style.spacing) {
-            HStack(spacing: 0) {
-                ForEach(Array(grid.weekdaySymbols.enumerated()), id: \.offset) { _, symbol in
-                    Text(symbol.uppercased())
-                        .font(style.weekdayFont)
-                        .foregroundStyle(Color.accentColor.opacity(0.8))
-                        .frame(maxWidth: .infinity)
-                }
-            }
-
-            VStack(spacing: style.spacing) {
-                ForEach(Array(grid.weeks.enumerated()), id: \.offset) { _, week in
-                    HStack(spacing: 0) {
-                        ForEach(Array(week.enumerated()), id: \.offset) { _, day in
-                            DayCell(day: day, style: style)
-                        }
-                    }
-                    .frame(maxHeight: .infinity)
-                }
-            }
-            .frame(maxHeight: .infinity)
-        }
+        CalendarMonthCanvas(grid: grid, style: style)
         .padding(style.padding)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.primary.opacity(style == .compact ? 0.045 : 0.03), in: RoundedRectangle(cornerRadius: style.cornerRadius, style: .continuous))
@@ -202,44 +268,67 @@ private struct MonthGridView: View {
     }
 }
 
-private struct DayCell: View {
-    let day: CalendarDay?
+private struct CalendarMonthCanvas: View {
+    let grid: CalendarGrid
     let style: MonthGridStyle
 
     var body: some View {
-        Group {
-            if let day, let url = DayDeepLink.url(for: day.date) {
-                Link(destination: url) {
-                    label(for: day)
+        Canvas { context, size in
+            guard size.width > 0, size.height > 0 else {
+                return
+            }
+
+            let columnWidth = size.width / 7
+            let weekdayHeight = min(style.weekdayHeight, size.height)
+            let gridTop = weekdayHeight + style.spacing
+            let rowHeight = max((size.height - gridTop) / 6, 0)
+
+            for index in grid.weekdaySymbols.indices {
+                let label = Text(grid.weekdaySymbols[index].uppercased())
+                    .font(style.weekdayFont)
+                    .foregroundStyle(Color.accentColor.opacity(0.8))
+                context.draw(
+                    context.resolve(label),
+                    at: CGPoint(x: columnWidth * (CGFloat(index) + 0.5), y: weekdayHeight / 2)
+                )
+            }
+
+            for weekIndex in grid.weeks.indices {
+                let week = grid.weeks[weekIndex]
+                for dayIndex in week.indices {
+                    guard let day = week[dayIndex] else {
+                        continue
+                    }
+
+                    let center = CGPoint(
+                        x: columnWidth * (CGFloat(dayIndex) + 0.5),
+                        y: gridTop + rowHeight * (CGFloat(weekIndex) + 0.5)
+                    )
+
+                    if day.isToday {
+                        let diameter = min(columnWidth, rowHeight) * 0.72
+                        let circle = CGRect(
+                            x: center.x - diameter / 2,
+                            y: center.y - diameter / 2,
+                            width: diameter,
+                            height: diameter
+                        )
+                        context.fill(Path(ellipseIn: circle), with: .color(.accentColor))
+                    }
+
+                    let label = Text("\(day.number)")
+                        .font(style.dayFont)
+                        .foregroundStyle(day.isToday ? Color.white : Color.primary)
+                    context.draw(context.resolve(label), at: center)
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(day.date.formatted(date: .complete, time: .omitted))
-            } else {
-                Color.clear
             }
         }
-        .frame(maxWidth: .infinity)
-    }
-
-    @ViewBuilder
-    private func label(for day: CalendarDay) -> some View {
-        Text(day.number, format: .number)
-            .font(style.dayFont)
-            .foregroundStyle(day.isToday ? Color.white : Color.primary)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background {
-                if day.isToday {
-                    Circle().fill(Color.accentColor)
-                }
-            }
-            .contentShape(Rectangle())
+        .accessibilityLabel("Calendar")
     }
 }
 
-private enum DayDeepLink {
-    static func url(for date: Date) -> URL? {
-        URL(string: "justcalendarwidget://day?timestamp=\(date.timeIntervalSince1970)")
-    }
+private enum CalendarDeepLink {
+    static let url = URL(string: "justcalendarwidget://calendar")
 }
 
 @main
