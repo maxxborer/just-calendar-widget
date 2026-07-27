@@ -263,7 +263,11 @@ private enum MonthGridStyle {
 
     var monthTitleSpacing: CGFloat { self == .compact ? 2 : 6 }
 
-    var todayDiameterScale: CGFloat { self == .compact ? 0.9 : 0.94 }
+    var todayHighlightScale: CGFloat { self == .compact ? 0.9 : 0.94 }
+
+    func todayHighlightCornerRadius(for side: CGFloat) -> CGFloat {
+        side * 0.2
+    }
 }
 
 private struct MonthGridView: View {
@@ -278,7 +282,7 @@ private struct MonthGridView: View {
                 .foregroundStyle(.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .center)
 
             CalendarMonthCanvas(grid: grid, style: style)
         }
@@ -296,6 +300,7 @@ private struct MonthGridView: View {
 private struct CalendarMonthCanvas: View {
     let grid: CalendarGrid
     let style: MonthGridStyle
+    @Environment(\.displayScale) private var displayScale
 
     var body: some View {
         Canvas { context, size in
@@ -307,6 +312,33 @@ private struct CalendarMonthCanvas: View {
             let weekdayHeight = min(style.weekdayHeight, size.height)
             let gridTop = weekdayHeight + style.spacing
             let rowHeight = max((size.height - gridTop) / 6, 0)
+
+            if rowHeight > 0, !grid.weeks.isEmpty {
+                let scale = max(displayScale, 1)
+                let lineWidth = 1 / scale
+                let separatorColor = Color(nsColor: .separatorColor)
+                    .opacity(style == .compact ? 0.72 : 0.62)
+                let gridBottom = gridTop + rowHeight * CGFloat(grid.weeks.count)
+                var separators = Path()
+
+                func pixelAligned(_ position: CGFloat) -> CGFloat {
+                    (position * scale).rounded(.down) / scale + lineWidth / 2
+                }
+
+                for column in 1 ..< 7 {
+                    let x = pixelAligned(columnWidth * CGFloat(column))
+                    separators.move(to: CGPoint(x: x, y: gridTop))
+                    separators.addLine(to: CGPoint(x: x, y: gridBottom))
+                }
+
+                for row in 1 ..< grid.weeks.count {
+                    let y = pixelAligned(gridTop + rowHeight * CGFloat(row))
+                    separators.move(to: CGPoint(x: 0, y: y))
+                    separators.addLine(to: CGPoint(x: size.width, y: y))
+                }
+
+                context.stroke(separators, with: .color(separatorColor), lineWidth: lineWidth)
+            }
 
             for index in grid.weekdaySymbols.indices {
                 let label = Text(grid.weekdaySymbols[index].uppercased())
@@ -331,14 +363,18 @@ private struct CalendarMonthCanvas: View {
                     )
 
                     if day.isToday {
-                        let diameter = min(columnWidth, rowHeight) * style.todayDiameterScale
-                        let circle = CGRect(
-                            x: center.x - diameter / 2,
-                            y: center.y - diameter / 2,
-                            width: diameter,
-                            height: diameter
+                        let highlightSide = min(columnWidth, rowHeight) * style.todayHighlightScale
+                        let highlight = CGRect(
+                            x: center.x - highlightSide / 2,
+                            y: center.y - highlightSide / 2,
+                            width: highlightSide,
+                            height: highlightSide
                         )
-                        context.fill(Path(ellipseIn: circle), with: .color(.accentColor))
+                        let cornerRadius = style.todayHighlightCornerRadius(for: highlightSide)
+                        context.fill(
+                            Path(roundedRect: highlight, cornerRadius: cornerRadius, style: .continuous),
+                            with: .color(.accentColor)
+                        )
                     }
 
                     let label = Text("\(day.number)")
