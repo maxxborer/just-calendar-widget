@@ -23,9 +23,11 @@ struct CalendarTimelineProvider: @MainActor TimelineProvider {
 
     @MainActor
     func getTimeline(in context: Context, completion: @escaping (Timeline<CalendarEntry>) -> Void) {
-        let now = Date()
-        let entry = CalendarEntryCache.shared.entry(for: now, kind: kind)
-        completion(Timeline(entries: [entry], policy: .after(CalendarEntryCache.nextHour(after: now))))
+        let schedule = CalendarGrid.dailyTimeline(after: Date())
+        let entries = schedule.entryDates.map { date in
+            CalendarEntryCache.shared.entry(for: date, kind: kind)
+        }
+        completion(Timeline(entries: entries, policy: .after(schedule.reloadDate)))
     }
 }
 
@@ -35,6 +37,7 @@ private enum CalendarEntryFactory {
         let grids = kind.monthOffsets.map { monthOffset in
             CalendarGrid.make(
                 for: CalendarGrid.monthDate(from: date, offset: monthOffset, calendar: calendar),
+                referenceDate: date,
                 calendar: calendar
             )
         }
@@ -54,23 +57,19 @@ private final class CalendarEntryCache {
             return cachedEntry
         }
 
-        entries = entries.filter { $0.key.hour == key.hour }
+        let calendar = Calendar.autoupdatingCurrent
+        let earliestRetainedDay = calendar.date(byAdding: .day, value: -1, to: key.dayStart) ?? key.dayStart
+        entries = entries.filter {
+            $0.key.dayStart >= earliestRetainedDay && $0.key.dayStart <= key.dayStart
+        }
         let entry = CalendarEntryFactory.make(for: date, kind: kind)
         entries[key] = entry
         return entry
     }
 
-    static func nextHour(after date: Date) -> Date {
-        Calendar.autoupdatingCurrent.nextDate(
-            after: date,
-            matching: DateComponents(minute: 0, second: 0),
-            matchingPolicy: .nextTime
-        ) ?? date.addingTimeInterval(3_600)
-    }
-
     private struct CacheKey: Hashable {
         let kind: String
-        let hour: Int
+        let dayStart: Date
         let firstWeekday: Int
         let localeIdentifier: String
         let timeZoneIdentifier: String
@@ -78,7 +77,7 @@ private final class CalendarEntryCache {
         init(date: Date, kind: WidgetKind) {
             let calendar = Calendar.autoupdatingCurrent
             self.kind = kind.rawValue
-            hour = Int(date.timeIntervalSince1970 / 3_600)
+            dayStart = calendar.startOfDay(for: date)
             firstWeekday = calendar.firstWeekday
             localeIdentifier = calendar.locale?.identifier ?? ""
             timeZoneIdentifier = calendar.timeZone.identifier

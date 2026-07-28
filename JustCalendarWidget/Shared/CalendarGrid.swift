@@ -8,6 +8,11 @@ struct CalendarDay: Identifiable, Equatable, Sendable {
     var id: Date { date }
 }
 
+struct CalendarTimelineSchedule: Equatable, Sendable {
+    let entryDates: [Date]
+    let reloadDate: Date
+}
+
 struct CalendarGrid: Equatable, Sendable {
     let monthStart: Date
     let monthTitle: String
@@ -16,6 +21,7 @@ struct CalendarGrid: Equatable, Sendable {
 
     static func make(
         for date: Date,
+        referenceDate: Date = Date(),
         calendar: Calendar = .autoupdatingCurrent
     ) -> CalendarGrid {
         let monthComponents = calendar.dateComponents([.year, .month], from: date)
@@ -44,7 +50,7 @@ struct CalendarGrid: Equatable, Sendable {
             return CalendarDay(
                 date: dayDate,
                 number: dayNumber,
-                isToday: calendar.isDateInToday(dayDate)
+                isToday: calendar.isDate(dayDate, inSameDayAs: referenceDate)
             )
         }
 
@@ -74,6 +80,17 @@ struct CalendarGrid: Equatable, Sendable {
             matching: DateComponents(hour: 0, minute: 0, second: 0),
             matchingPolicy: .nextTime
         ) ?? date.addingTimeInterval(86_400)
+    }
+
+    static func dailyTimeline(
+        after date: Date,
+        calendar: Calendar = .autoupdatingCurrent
+    ) -> CalendarTimelineSchedule {
+        let nextEntryDate = nextMidnight(after: date, calendar: calendar)
+        return CalendarTimelineSchedule(
+            entryDates: [date, nextEntryDate],
+            reloadDate: nextMidnight(after: nextEntryDate, calendar: calendar)
+        )
     }
 
     private static func weekdaySymbols(for calendar: Calendar) -> [String] {

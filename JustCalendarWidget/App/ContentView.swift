@@ -7,20 +7,24 @@ import WidgetKit
 final class WidgetStatus: ObservableObject {
     @Published private(set) var addedKinds: Set<WidgetKind> = []
     @Published private(set) var isLoading = true
+    @Published private(set) var configurationError: String?
 
     func refresh() {
         WidgetCenter.shared.getCurrentConfigurations { [weak self] result in
-            let kinds: Set<WidgetKind>
-            switch result {
-            case let .success(configurations):
-                kinds = Set(configurations.compactMap { WidgetKind(rawValue: $0.kind) })
-            case .failure:
-                kinds = []
-            }
-
             Task { @MainActor [weak self] in
-                self?.addedKinds = kinds
-                self?.isLoading = false
+                guard let self else {
+                    return
+                }
+
+                switch result {
+                case let .success(configurations):
+                    addedKinds = Set(configurations.compactMap { WidgetKind(rawValue: $0.kind) })
+                    configurationError = nil
+                case .failure:
+                    configurationError = "Unable to check your widget configuration."
+                }
+
+                isLoading = false
             }
         }
     }
@@ -37,19 +41,22 @@ struct ContentView: View {
                 ProgressView()
                     .controlSize(.large)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if let configurationError = status.configurationError, status.addedKinds.isEmpty {
+                WidgetStatusErrorView(message: configurationError, refresh: refreshWidgetStatus)
             } else if status.addedKinds.isEmpty {
-                SetupGuide(currentStep: $currentStep, refresh: reloadWidgets)
+                SetupGuide(currentStep: $currentStep, refresh: refreshWidgetStatus)
             } else {
                 WidgetStatusView(
                     addedKinds: status.addedKinds,
-                    refresh: reloadWidgets
+                    configurationError: status.configurationError,
+                    refresh: refreshWidgetStatus
                 )
             }
         }
         .frame(minWidth: 680, minHeight: 500)
         .background(Color(nsColor: .windowBackgroundColor))
         .task {
-            reloadWidgets()
+            status.refresh()
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
@@ -63,11 +70,26 @@ struct ContentView: View {
         }
     }
 
-    private func reloadWidgets() {
-        WidgetCenter.shared.reloadAllTimelines()
+    private func refreshWidgetStatus() {
         status.refresh()
     }
 
+}
+
+private struct WidgetStatusErrorView: View {
+    let message: String
+    let refresh: () -> Void
+
+    var body: some View {
+        ContentUnavailableView {
+            Label("Widget status is unavailable", systemImage: "exclamationmark.triangle")
+        } description: {
+            Text(message)
+        } actions: {
+            Button("Try again", action: refresh)
+                .buttonStyle(.borderedProminent)
+        }
+    }
 }
 
 private struct SetupGuide: View {
@@ -155,6 +177,7 @@ private struct SetupGuide: View {
 
 private struct WidgetStatusView: View {
     let addedKinds: Set<WidgetKind>
+    let configurationError: String?
     let refresh: () -> Void
 
     var body: some View {
@@ -167,6 +190,12 @@ private struct WidgetStatusView: View {
 
                     Text("Just Calendar Widget is active on your desktop.")
                         .foregroundStyle(.secondary)
+
+                    if let configurationError {
+                        Label(configurationError, systemImage: "exclamationmark.triangle")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 Spacer()
@@ -175,7 +204,7 @@ private struct WidgetStatusView: View {
                     Label("Settings", systemImage: "gearshape")
                 }
 
-                Button("Refresh", systemImage: "arrow.clockwise") {
+                Button("Check widgets", systemImage: "arrow.clockwise") {
                     refresh()
                 }
             }

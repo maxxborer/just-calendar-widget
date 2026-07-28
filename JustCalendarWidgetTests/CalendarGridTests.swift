@@ -41,8 +41,60 @@ final class CalendarGridTests: XCTestCase {
         XCTAssertEqual(grid.monthTitle, calendar.standaloneMonthSymbols[1].localizedCapitalized)
     }
 
-    private func date(year: Int, month: Int, day: Int) throws -> Date {
-        let components = DateComponents(calendar: calendar, year: year, month: month, day: day)
+    func testNextMidnightUsesConfiguredCalendar() throws {
+        let after = try date(year: 2026, month: 7, day: 29, hour: 23, minute: 45)
+        let nextMidnight = CalendarGrid.nextMidnight(after: after, calendar: calendar)
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: nextMidnight)
+
+        XCTAssertEqual(components.year, 2026)
+        XCTAssertEqual(components.month, 7)
+        XCTAssertEqual(components.day, 30)
+        XCTAssertEqual(components.hour, 0)
+        XCTAssertEqual(components.minute, 0)
+    }
+
+    func testDailyTimelinePreloadsTheNextLocalDay() throws {
+        let now = try date(year: 2026, month: 7, day: 29, hour: 23, minute: 45)
+        let nextMidnight = try date(year: 2026, month: 7, day: 30)
+        let followingMidnight = try date(year: 2026, month: 7, day: 31)
+
+        let schedule = CalendarGrid.dailyTimeline(after: now, calendar: calendar)
+
+        XCTAssertEqual(schedule.entryDates, [now, nextMidnight])
+        XCTAssertEqual(schedule.reloadDate, followingMidnight)
+    }
+
+    func testCalendarGridMarksTheEntryDateAsToday() throws {
+        let entryDate = try date(year: 2026, month: 7, day: 30)
+        let grid = CalendarGrid.make(
+            for: entryDate,
+            referenceDate: entryDate,
+            calendar: calendar
+        )
+        let highlightedDays = grid.weeks
+            .flatMap { $0 }
+            .compactMap { $0 }
+            .filter(\.isToday)
+            .map(\.number)
+
+        XCTAssertEqual(highlightedDays, [30])
+    }
+
+    private func date(
+        year: Int,
+        month: Int,
+        day: Int,
+        hour: Int = 0,
+        minute: Int = 0
+    ) throws -> Date {
+        let components = DateComponents(
+            calendar: calendar,
+            year: year,
+            month: month,
+            day: day,
+            hour: hour,
+            minute: minute
+        )
         return try XCTUnwrap(calendar.date(from: components))
     }
 }
