@@ -10,6 +10,7 @@ struct CaptureWidgets {
     static func main() throws {
         let app = NSApplication.shared
         app.setActivationPolicy(.accessory)
+        app.finishLaunching()
         let arguments = CommandLine.arguments
         guard arguments.count == 3 else {
             throw CaptureError.arguments

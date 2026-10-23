@@ -128,7 +128,7 @@ private struct SetupGuide: View {
 
                 Text("Add a Just Calendar Widget to see your months at a glance.")
                     .font(.body)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(CalendarAppearance.muted)
             }
             .multilineTextAlignment(.center)
             .padding(.top, 44)
@@ -190,12 +190,12 @@ private struct WidgetStatusView: View {
                         .foregroundStyle(CalendarAppearance.brand)
 
                     Text("Just Calendar Widget is active on your desktop.")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(CalendarAppearance.muted)
 
                     if let configurationError {
                         Label(configurationError, systemImage: "exclamationmark.triangle")
                             .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(CalendarAppearance.muted)
                     }
                 }
 
@@ -223,7 +223,7 @@ private struct WidgetStatusView: View {
 
             Text("To add another layout, Control-click the desktop and choose Edit Widgets.")
                 .font(.footnote)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(CalendarAppearance.muted)
         }
         .padding(36)
     }
@@ -240,16 +240,16 @@ private struct StepIndicator: View {
             VStack(alignment: .leading, spacing: 8) {
                 ZStack {
                     Circle()
-                        .fill(isCurrent ? CalendarAppearance.brand : Color.secondary.opacity(0.15))
+                        .fill(isCurrent ? CalendarAppearance.brand : CalendarAppearance.muted.opacity(0.15))
                         .frame(width: 28, height: 28)
                     Text(number, format: .number)
                         .font(.caption.weight(.bold))
-                        .foregroundStyle(isCurrent ? .white : .secondary)
+                        .foregroundStyle(isCurrent ? Color.white : CalendarAppearance.muted)
                 }
 
                 Text(step.title)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(CalendarAppearance.text)
                     .multilineTextAlignment(.leading)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -279,7 +279,7 @@ private struct SetupStepDetail: View {
                 Text(step.title)
                     .font(.headline)
                 Text(step.description)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(CalendarAppearance.muted)
             }
             Spacer()
         }
@@ -312,7 +312,7 @@ private struct PreviewTile: View {
                 .font(.subheadline.weight(.semibold))
             Text(size)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(CalendarAppearance.muted)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
@@ -328,12 +328,12 @@ private struct AddedWidgetCard: View {
         VStack(alignment: .leading, spacing: 10) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(isAdded ? CalendarAppearance.brand : Color.secondary)
+                .foregroundStyle(isAdded ? CalendarAppearance.brand : CalendarAppearance.muted)
             Text(kind.displayName)
                 .font(.subheadline.weight(.semibold))
             Label(isAdded ? "Added" : "Not added", systemImage: isAdded ? "checkmark" : "minus")
                 .font(.caption)
-                .foregroundStyle(isAdded ? CalendarAppearance.brand : Color.secondary)
+                .foregroundStyle(isAdded ? CalendarAppearance.brand : CalendarAppearance.muted)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
@@ -380,7 +380,7 @@ struct SettingsView: View {
             Section("Software Updates") {
                 Text("Current version \(currentVersion)")
                     .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(CalendarAppearance.muted)
 
                 if let releasesURL = Self.releasesURL {
                     Link("Check Update", destination: releasesURL)
