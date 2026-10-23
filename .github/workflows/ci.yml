@@ -24,3 +24,11 @@ jobs:
             -derivedDataPath "$RUNNER_TEMP/DerivedData" \
             CODE_SIGNING_ALLOWED=NO \
             test
+      - name: Capture native widget windows
+        run: scripts/capture-screenshots.sh "$RUNNER_TEMP/widget-screenshots"
+      - name: Upload real macOS screenshots
+        uses: actions/upload-artifact@v7
+        with:
+          name: widget-screenshots
+          path: ${{ runner.temp }}/widget-screenshots/*.png
+          if-no-files-found: error

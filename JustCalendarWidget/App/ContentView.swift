@@ -54,7 +54,8 @@ struct ContentView: View {
             }
         }
         .frame(minWidth: 680, minHeight: 500)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .foregroundStyle(CalendarAppearance.text)
+        .background(CalendarAppearance.surface)
         .task {
             status.refresh()
         }
@@ -119,11 +120,11 @@ private struct SetupGuide: View {
             VStack(spacing: 10) {
                 Image(systemName: "calendar.badge.plus")
                     .font(.system(size: 42, weight: .medium))
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(CalendarAppearance.brand)
                     .symbolRenderingMode(.hierarchical)
 
                 Text("Your calendar belongs on the desktop")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(CalendarAppearance.displayFont(size: 24))
 
                 Text("Add a Just Calendar Widget to see your months at a glance.")
                     .font(.body)
@@ -185,8 +186,8 @@ private struct WidgetStatusView: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("Your widgets are ready", systemImage: "checkmark.circle.fill")
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color.accentColor)
+                        .font(CalendarAppearance.displayFont(size: 24))
+                        .foregroundStyle(CalendarAppearance.brand)
 
                     Text("Just Calendar Widget is active on your desktop.")
                         .foregroundStyle(.secondary)
@@ -239,7 +240,7 @@ private struct StepIndicator: View {
             VStack(alignment: .leading, spacing: 8) {
                 ZStack {
                     Circle()
-                        .fill(isCurrent ? Color.accentColor : Color.secondary.opacity(0.15))
+                        .fill(isCurrent ? CalendarAppearance.brand : Color.secondary.opacity(0.15))
                         .frame(width: 28, height: 28)
                     Text(number, format: .number)
                         .font(.caption.weight(.bold))
@@ -255,7 +256,7 @@ private struct StepIndicator: View {
             .padding(14)
             .background {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(isCurrent ? Color.accentColor.opacity(0.12) : Color.primary.opacity(0.04))
+                    .fill(isCurrent ? CalendarAppearance.accentSoft : CalendarAppearance.field)
             }
         }
         .buttonStyle(.plain)
@@ -270,9 +271,9 @@ private struct SetupStepDetail: View {
         HStack(spacing: 16) {
             Image(systemName: step.icon)
                 .font(.system(size: 28, weight: .medium))
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(CalendarAppearance.brand)
                 .frame(width: 48, height: 48)
-                .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .background(CalendarAppearance.accentSoft, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(step.title)
@@ -283,7 +284,7 @@ private struct SetupStepDetail: View {
             Spacer()
         }
         .padding(18)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .background(CalendarAppearance.field, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 }
 
@@ -306,7 +307,7 @@ private struct PreviewTile: View {
         VStack(alignment: .leading, spacing: 10) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(CalendarAppearance.brand)
             Text(title)
                 .font(.subheadline.weight(.semibold))
             Text(size)
@@ -315,7 +316,7 @@ private struct PreviewTile: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
-        .background(Color.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(CalendarAppearance.field, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 
@@ -327,16 +328,16 @@ private struct AddedWidgetCard: View {
         VStack(alignment: .leading, spacing: 10) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(isAdded ? Color.accentColor : Color.secondary)
+                .foregroundStyle(isAdded ? CalendarAppearance.brand : Color.secondary)
             Text(kind.displayName)
                 .font(.subheadline.weight(.semibold))
             Label(isAdded ? "Added" : "Not added", systemImage: isAdded ? "checkmark" : "minus")
                 .font(.caption)
-                .foregroundStyle(isAdded ? Color.accentColor : Color.secondary)
+                .foregroundStyle(isAdded ? CalendarAppearance.brand : Color.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(Color.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(CalendarAppearance.field, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     private var icon: String {

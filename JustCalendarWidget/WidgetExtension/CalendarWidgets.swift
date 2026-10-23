@@ -134,6 +134,19 @@ struct CalendarWidgetView: View {
     let entry: CalendarEntry
 
     var body: some View {
+        CalendarWidgetContent(entry: entry)
+            .widgetURL(CalendarDeepLink.url)
+            .containerBackground(for: .widget) {
+                CalendarAppearance.surface
+            }
+    }
+}
+
+/// The actual widget content, also hosted by the macOS screenshot tool.
+struct CalendarWidgetContent: View {
+    let entry: CalendarEntry
+
+    var body: some View {
         Group {
             switch entry.kind {
             case .twoMonths:
@@ -154,12 +167,11 @@ struct CalendarWidgetView: View {
                 }
             }
         }
-        .padding(6)
+        .padding(10)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .widgetURL(CalendarDeepLink.url)
-        .containerBackground(for: .widget) {
-            Color(nsColor: .controlBackgroundColor)
-        }
+        .foregroundStyle(CalendarAppearance.text)
+        .tint(CalendarAppearance.brand)
+        .environment(\.colorScheme, .light)
     }
 
     private func isPastMonth(_ grid: CalendarGrid) -> Bool {
@@ -248,15 +260,15 @@ private enum MonthGridStyle {
     var monthTitleFont: Font {
         switch self {
         case .compact:
-            .system(size: 13, weight: .semibold)
+            CalendarAppearance.displayFont(size: 10)
         case .expanded:
-            .system(size: 20, weight: .semibold)
+            CalendarAppearance.displayFont(size: 17)
         }
     }
 
-    var cornerRadius: CGFloat { self == .compact ? 24 : 28 }
+    var cornerRadius: CGFloat { self == .compact ? 12 : 18 }
 
-    var padding: CGFloat { self == .compact ? 4 : 8 }
+    var padding: CGFloat { self == .compact ? 6 : 12 }
 
     var weekdayHeight: CGFloat { self == .compact ? 14 : 16 }
 
@@ -278,21 +290,21 @@ private struct MonthGridView: View {
         VStack(alignment: .leading, spacing: style.monthTitleSpacing) {
             Text(grid.monthTitle)
                 .font(style.monthTitleFont)
-                .foregroundStyle(.primary)
+                .foregroundStyle(CalendarAppearance.brand)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
-                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             CalendarMonthCanvas(grid: grid, style: style)
         }
         .padding(style.padding)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.primary.opacity(style == .compact ? 0.045 : 0.03), in: RoundedRectangle(cornerRadius: style.cornerRadius, style: .continuous))
+        .background(CalendarAppearance.field, in: RoundedRectangle(cornerRadius: style.cornerRadius, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: style.cornerRadius, style: .continuous)
-                .stroke(Color.accentColor.opacity(0.12), lineWidth: 1)
+                .stroke(CalendarAppearance.border, lineWidth: 0.5)
         }
-        .opacity(isPastMonth ? 0.56 : 1)
+        .opacity(isPastMonth ? 0.72 : 1)
     }
 }
 
@@ -315,8 +327,7 @@ private struct CalendarMonthCanvas: View {
             if rowHeight > 0, !grid.weeks.isEmpty {
                 let scale = max(displayScale, 1)
                 let lineWidth = 1 / scale
-                let separatorColor = Color(nsColor: .separatorColor)
-                    .opacity(style == .compact ? 0.72 : 0.62)
+                let separatorColor = CalendarAppearance.border.opacity(0.65)
                 let gridBottom = gridTop + rowHeight * CGFloat(grid.weeks.count)
                 var separators = Path()
 
@@ -342,7 +353,7 @@ private struct CalendarMonthCanvas: View {
             for index in grid.weekdaySymbols.indices {
                 let label = Text(grid.weekdaySymbols[index].uppercased())
                     .font(style.weekdayFont)
-                    .foregroundStyle(Color.accentColor.opacity(0.8))
+                    .foregroundStyle(CalendarAppearance.muted)
                 context.draw(
                     context.resolve(label),
                     at: CGPoint(x: columnWidth * (CGFloat(index) + 0.5), y: weekdayHeight / 2)
@@ -372,13 +383,13 @@ private struct CalendarMonthCanvas: View {
                         let cornerRadius = style.todayHighlightCornerRadius(for: highlightSide)
                         context.fill(
                             Path(roundedRect: highlight, cornerRadius: cornerRadius, style: .continuous),
-                            with: .color(.accentColor)
+                            with: .color(CalendarAppearance.brand)
                         )
                     }
 
                     let label = Text("\(day.number)")
                         .font(style.dayFont)
-                        .foregroundStyle(day.isToday ? Color.white : Color.primary)
+                        .foregroundStyle(day.isToday ? Color.white : CalendarAppearance.text)
                     context.draw(context.resolve(label), at: center)
                 }
             }
@@ -391,11 +402,18 @@ private enum CalendarDeepLink {
     static let url = URL(string: "justcalendarwidget://calendar")
 }
 
+#if !SCREENSHOT
 @main
 struct JustCalendarWidgetBundle: WidgetBundle {
+    init() {
+        CalendarAppearance.registerFonts()
+    }
+
     var body: some Widget {
         TwoMonthsCalendarWidget()
         FourMonthsCalendarWidget()
         CurrentMonthCalendarWidget()
     }
 }
+
+#endif
