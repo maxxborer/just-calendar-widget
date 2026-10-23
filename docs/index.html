@@ -3,14 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Just Calendar Widget — a quiet, native calendar for your macOS desktop." />
-    <meta name="theme-color" content="#f5f5f7" />
+    <meta name="description" content="Three native calendar widgets for macOS. No accounts, events, or subscriptions." />
+    <meta name="theme-color" content="#1616d9" />
     <title>Just Calendar Widget</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-
     <header class="site-header">
       <a class="brand" href="#top" aria-label="Just Calendar Widget home">
         <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
@@ -22,80 +21,71 @@
         <a class="nav-download" href="https://github.com/maxxborer/just-calendar-widget/releases">Download</a>
       </nav>
     </header>
-
     <main id="main">
       <section class="hero" id="top" aria-labelledby="hero-title">
-        <p class="eyebrow">FOR macOS</p>
-        <h1 id="hero-title">More months.<br />Less noise.</h1>
-        <p class="hero-copy">A quiet, native calendar for the place you already look: your desktop.</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="https://github.com/maxxborer/just-calendar-widget/releases">Download for macOS</a>
-          <a class="button button-text" href="https://github.com/maxxborer/just-calendar-widget">View source <span aria-hidden="true">↗</span></a>
+        <div class="hero-heading">
+          <div>
+            <p class="eyebrow">JUST A CALENDAR · macOS 14+</p>
+            <h1 id="hero-title">Your months.<br />At a glance.</h1>
+          </div>
+          <div>
+            <p class="hero-copy">Keep one, two, or four months on your desktop. No events to manage. No account to create.</p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="https://github.com/maxxborer/just-calendar-widget/releases">Download for macOS</a>
+              <a class="button button-text" href="https://github.com/maxxborer/just-calendar-widget">View source ↗</a>
+            </div>
+          </div>
         </div>
-
-        <figure class="product-preview">
-          <img src="images/calendar-widget-preview.svg" width="1586" height="992" alt="Just Calendar Widget showing a spacious calendar grid without a header or navigation controls, with the current day highlighted in blue" />
-          <figcaption>Designed to feel at home on your desktop.</figcaption>
-        </figure>
+        <!-- native-gallery:start -->
+        <!-- native-gallery:end -->
       </section>
-
-      <section class="statement" aria-labelledby="statement-title">
-        <p class="eyebrow">CALENDAR, SIMPLIFIED</p>
-        <h2 id="statement-title">Everything you need<br />to see time clearly.</h2>
-        <p>Just Calendar Widget does one thing well: it puts the months ahead in a beautifully restrained view.</p>
-      </section>
-
       <section class="widgets" id="widgets" aria-labelledby="widgets-title">
-        <div class="section-heading">
-          <p class="eyebrow">THREE THOUGHTFUL VIEWS</p>
-          <h2 id="widgets-title">The right amount of time.</h2>
-        </div>
+        <h2 id="widgets-title">Three ways to see your time.</h2>
         <div class="widget-options">
-          <article class="option option-wide">
-            <div class="layout-preview layout-two" aria-hidden="true">
-              <span class="layout-month"></span><span class="layout-month"></span>
-            </div>
-            <p class="option-size">MEDIUM · 2×1</p>
+          <article class="option">
+            <!-- native-two:start -->
+            <!-- native-two:end -->
+            <p class="option-size">Medium · 2×1</p>
             <h3>Two Months</h3>
-            <p>See this month and the next side by side.</p>
+            <p>This month and the next, side by side.</p>
           </article>
-          <article class="option option-square">
-            <div class="layout-preview layout-four" aria-hidden="true">
-              <span class="layout-month"></span><span class="layout-month"></span><span class="layout-month"></span><span class="layout-month"></span>
-            </div>
-            <p class="option-size">LARGE · 2×2</p>
+          <article class="option">
+            <!-- native-four:start -->
+            <!-- native-four:end -->
+            <p class="option-size">Large · 2×2</p>
             <h3>Four Months</h3>
-            <p>See the shape of a season in a single glance.</p>
+            <p>Last month, this month, and the next two.</p>
           </article>
-          <article class="option option-square option-current">
-            <div class="layout-preview layout-current" aria-hidden="true"><span class="layout-month"></span></div>
-            <p class="option-size">LARGE · 2×2</p>
+          <article class="option">
+            <!-- native-current:start -->
+            <!-- native-current:end -->
+            <p class="option-size">Large · 2×2</p>
             <h3>Current Month</h3>
-            <p>A spacious view for the month you are in.</p>
+            <p>One month with more room for every date.</p>
           </article>
         </div>
       </section>
-
       <section class="features" id="privacy" aria-labelledby="features-title">
-        <div class="section-heading"><p class="eyebrow">QUIET BY DESIGN</p><h2 id="features-title">Private by default.</h2></div>
+        <h2 id="features-title">A calendar. Nothing to connect.</h2>
         <div class="feature-list">
-          <article><span class="feature-number">01</span><h3>Native to macOS</h3><p>Built with SwiftUI and WidgetKit for a familiar, responsive experience.</p></article>
-          <article><span class="feature-number">02</span><h3>No accounts</h3><p>No sign-in, tracking, network requests, or calendar data leaving your Mac.</p></article>
-          <article><span class="feature-number">03</span><h3>Your settings</h3><p>Language, week start, time zone, and colour follow your Mac automatically.</p></article>
+          <article><h3>Native widgets</h3><p>Built with SwiftUI and WidgetKit. Add a layout from the macOS widget gallery.</p></article>
+          <article><h3>No calendar access</h3><p>No accounts, analytics, or access to your events. The app links to GitHub when you check for an update.</p></article>
+          <article><h3>Your week, your way</h3><p>Month names, the first weekday, and time zone follow your Mac. Warm surfaces and a blue accent keep dates clear.</p></article>
         </div>
       </section>
-
-      <section class="cta" aria-labelledby="cta-title">
-        <p class="eyebrow">OPEN SOURCE · MIT LICENSE</p>
-        <h2 id="cta-title">Make room for time.</h2>
-        <p>Download Just Calendar Widget, add a view to your desktop, and get on with your day.</p>
-        <a class="button button-primary" href="https://github.com/maxxborer/just-calendar-widget/releases">Get the latest release</a>
+      <section class="install" aria-labelledby="install-title">
+        <h2 id="install-title">On your desktop in a minute.</h2>
+        <ol>
+          <li>Download the <a href="https://github.com/maxxborer/just-calendar-widget/releases">latest DMG</a> and move the app to Applications.</li>
+          <li>Open Just Calendar Widget from Applications once.</li>
+          <li>Control-click your desktop, choose Edit Widgets, and search for Just Calendar Widget.</li>
+        </ol>
+        <p>Preview builds use an ad-hoc signature. See the <a href="https://github.com/maxxborer/just-calendar-widget#install">installation guide</a> if macOS blocks opening.</p>
       </section>
     </main>
-
     <footer>
-      <span>© 2026 Just Calendar Widget</span>
-      <span><a href="https://github.com/maxxborer/just-calendar-widget">GitHub</a><a href="https://github.com/maxxborer/just-calendar-widget/blob/main/LICENSE">MIT License</a></span>
+      <span>Just Calendar Widget · Free and open source</span>
+      <span><a href="https://github.com/maxxborer/just-calendar-widget">GitHub</a><a href="https://github.com/maxxborer/just-calendar-widget/blob/main/LICENSE">MIT License</a><a href="https://github.com/maseaaao/maseaaao.tv">Visual identity: maseaaao</a></span>
     </footer>
   </body>
 </html>

@@ -10,9 +10,11 @@ A focused macOS calendar companion with exactly three desktop widgets. Built wit
 
 ## What it is
 
-Just Calendar Widget puts a clean, blue, macOS-style calendar on your desktop. It follows the system calendar, locale, first weekday, and time zone; the current day uses the system blue accent. No calendar events are read or stored. The calendar grid uses the whole widget surface — without a title, month caption, icon, or navigation controls.
+Just Calendar Widget puts a compact calendar on your desktop. It follows the system calendar, locale, first weekday, and time zone. Each month has a caption; today is highlighted in blue. The visual identity is adapted from [maseaaao.tv](https://github.com/maseaaao/maseaaao.tv): warm light surfaces, #1616D9 accents, and Unbounded month headings. No calendar events are read or stored.
 
-![Large calendar widget preview](docs/images/calendar-widget-preview.svg)
+<!-- native-screenshots:start -->
+<!-- A macOS capture must exist before adding a product screenshot here. -->
+<!-- native-screenshots:end -->
 
 | Widget | macOS size | Months |
 | --- | --- | --- |
@@ -37,11 +39,11 @@ After you try to open the app from Applications, choose **Apple menu → System 
 
 Open the app once **from Applications**. If no widget is installed, it shows a three-step guide. Then Control-click the desktop, choose **Edit Widgets**, search for **Just Calendar Widget**, and pick one of the layouts above. WidgetKit registers a widget only after its containing app has been launched at least once after installation.
 
-The two- and four-month layouts show the current period at a glance; the previous month in the four-month layout is intentionally softer. Select a day to open Calendar.app on that date when macOS supports the system calendar deep link; otherwise, Calendar.app opens normally.
+The two- and four-month layouts show the current period at a glance; the previous month in the four-month layout is intentionally softer. Select a widget to open Calendar.app.
 
 ## Updates and privacy
 
-The app can check the repository's public GitHub Releases API for a newer version. It checks at most once every seven days, sends no account or calendar data, and only opens the release page after you choose **Open Release**. Disable automatic checks or run **Check Now** in **Just Calendar Widget → Settings**.
+The app does not read your calendar events or send analytics. **Just Calendar Widget → Settings → Check Update** opens the public GitHub Releases page in your browser. There are no automatic update checks.
 
 ## Requirements and development
 
@@ -61,6 +63,22 @@ xcodebuild \
   CODE_SIGNING_ALLOWED=NO \
   test
 ```
+
+## Product screenshots
+
+The previous illustrated previews have been removed because they did not match the product. No replacement screenshot is claimed until the native views have actually been captured on macOS.
+
+On macOS, run:
+
+```sh
+scripts/capture-screenshots.sh
+```
+
+The tool compiles the same `CalendarWidgetContent` used by WidgetKit, hosts it in native windows at medium and large widget sizes, and captures those windows with macOS `screencapture`. Allow Screen Recording for your terminal if macOS requests it. It uses a fixed date (23 October 2026) and English Monday-first calendar for repeatability. The resulting PNG files show actual SwiftUI rendering; they are not captures of installed desktop widgets, so wallpaper, desktop tint, and WidgetKit presentation may differ.
+
+After capturing, run `python3 scripts/publish-screenshots.py` to validate the PNGs and insert them into this README and the website, then commit the images and documentation together. CI also uploads captures as the `widget-screenshots` artifact when GitHub Actions is enabled.
+
+Unbounded is bundled under the [SIL Open Font License](JustCalendarWidget/Resources/Fonts/Unbounded-OFL.txt).
 
 ## Releases
 
